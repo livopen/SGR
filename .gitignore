@@ -57,3 +57,8 @@ CodeCoverage/
 *.VisualState.xml
 TestResult.xml
 nunit-*.xml
+
+
+.assemblyInfo.cs
+.assemblyAttributes.cs
+.assemblyInput.cache
