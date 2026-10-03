@@ -2,7 +2,9 @@ using System;
 
 namespace SGR.Dominio.Actuaciones;
 
-public class TipoActuacion
+public enum TipoActuacion
 {
+    Observacion, Inspeccion, OrdenDeTrabajo, TrabajoRealizado,
+RespuestaAlVecino, Archivo
 
 }
