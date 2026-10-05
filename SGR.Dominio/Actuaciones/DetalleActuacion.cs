@@ -2,7 +2,7 @@ using System;
 
 namespace SGR.Dominio.Actuaciones;
 
-public class DetalleActuacion
+public record class DetalleActuacion
 {
-
+    string Descripcion;
 }

@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\SGR\\SGR.Aplicacion\\SGR.Aplicacion.csproj": {}
+    "C:\\Users\\estudiante\\SGR\\SGR.Aplicacion\\SGR.Aplicacion.csproj": {}
   },
   "projects": {
-    "C:\\SGR\\SGR.Aplicacion\\SGR.Aplicacion.csproj": {
+    "C:\\Users\\estudiante\\SGR\\SGR.Aplicacion\\SGR.Aplicacion.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\SGR\\SGR.Aplicacion\\SGR.Aplicacion.csproj",
+        "projectUniqueName": "C:\\Users\\estudiante\\SGR\\SGR.Aplicacion\\SGR.Aplicacion.csproj",
         "projectName": "SGR.Aplicacion",
-        "projectPath": "C:\\SGR\\SGR.Aplicacion\\SGR.Aplicacion.csproj",
-        "packagesPath": "C:\\Users\\Jorge\\.nuget\\packages\\",
-        "outputPath": "C:\\SGR\\SGR.Aplicacion\\obj\\",
+        "projectPath": "C:\\Users\\estudiante\\SGR\\SGR.Aplicacion\\SGR.Aplicacion.csproj",
+        "packagesPath": "C:\\Users\\estudiante\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\estudiante\\SGR\\SGR.Aplicacion\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\Jorge\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\estudiante\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net10.0"
@@ -26,8 +26,8 @@
           "net10.0": {
             "targetAlias": "net10.0",
             "projectReferences": {
-              "C:\\SGR\\SGR.Dominio\\SGR.Dominio.csproj": {
-                "projectPath": "C:\\SGR\\SGR.Dominio\\SGR.Dominio.csproj"
+              "C:\\Users\\estudiante\\SGR\\SGR.Dominio\\SGR.Dominio.csproj": {
+                "projectPath": "C:\\Users\\estudiante\\SGR\\SGR.Dominio\\SGR.Dominio.csproj"
               }
             }
           }
@@ -341,17 +341,17 @@
         }
       }
     },
-    "C:\\SGR\\SGR.Dominio\\SGR.Dominio.csproj": {
+    "C:\\Users\\estudiante\\SGR\\SGR.Dominio\\SGR.Dominio.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\SGR\\SGR.Dominio\\SGR.Dominio.csproj",
+        "projectUniqueName": "C:\\Users\\estudiante\\SGR\\SGR.Dominio\\SGR.Dominio.csproj",
         "projectName": "SGR.Dominio",
-        "projectPath": "C:\\SGR\\SGR.Dominio\\SGR.Dominio.csproj",
-        "packagesPath": "C:\\Users\\Jorge\\.nuget\\packages\\",
-        "outputPath": "C:\\SGR\\SGR.Dominio\\obj\\",
+        "projectPath": "C:\\Users\\estudiante\\SGR\\SGR.Dominio\\SGR.Dominio.csproj",
+        "packagesPath": "C:\\Users\\estudiante\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\estudiante\\SGR\\SGR.Dominio\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\Jorge\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\estudiante\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net10.0"
