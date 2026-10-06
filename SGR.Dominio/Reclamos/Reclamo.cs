@@ -1,5 +1,5 @@
 using System;
-using SGR.Dominio.Comun;
+using SGR.Dominio.Comun ;
 namespace SGR.Dominio.Reclamos;
 
 public class Reclamo
@@ -20,10 +20,11 @@ public class Reclamo
         UsuarioUltimoCambio = usuarioUltimoCambio;
         Estado = EstadoReclamo.Recibido;
     }
+    
     private Reclamo(Guid id, Asunto asunto, DateTime fechaCreacion, DateTime fechaUltimaModificacion, Guid usuarioUltimoCambio, EstadoReclamo estado)
     {
         if (fechaUltimaModificacion < fechaCreacion)
-            throw new ArgumentException("La fecha de última modificación no puede ser anterior a la fecha de creación", nameof(fechaUltimaModificacion));
+            throw new DominioException("La fecha de última modificación no puede ser anterior a la fecha de creación", nameof(fechaUltimaModificacion));
         Id = id;
         Asunto = asunto ?? throw new DominioException("El asunto no puede ser nulo");
         FechaCreacion = fechaCreacion;
