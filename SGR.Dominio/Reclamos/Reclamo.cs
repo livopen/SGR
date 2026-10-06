@@ -4,17 +4,17 @@ namespace SGR.Dominio.Reclamos;
 
 public class Reclamo
 {
-    private Guid Id {get; private set; }
-    private Asunto Asunto { get; private set; }
-    private DateTime FechaCreacion { get; private set; }
-    private DateTime FechaUltimaModificacion { get; private set; }
-    private Guid UsuarioUltimoCambio { get; private set; }
-    private EstadoReclamo Estado { get; private set; }
+    public Guid Id {get; private set; }
+    public Asunto Asunto { get; private set; }
+    public DateTime FechaCreacion { get; private set; }
+    public DateTime FechaUltimaModificacion { get; private set; }
+    public Guid UsuarioUltimoCambio { get; private set; }
+    public EstadoReclamo Estado { get; private set; }
 
     public Reclamo(Asunto asunto, Guid usuarioUltimoCambio)
     {
         Id = Guid.NewGuid();
-        Asunto = asunto ?? throw new ArgumentNullException(nameof(asunto));
+        Asunto = asunto ?? throw new DominioException("El asunto no puede ser nulo");
         FechaCreacion = DateTime.UtcNow;
         FechaUltimaModificacion = FechaCreacion;
         UsuarioUltimoCambio = usuarioUltimoCambio;
