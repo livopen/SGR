@@ -1,5 +1,5 @@
 using System;
-
+using SGR.Dominio.Comun ;
 namespace SGR.Dominio.Reclamos;
 
 public record class Asunto
@@ -8,7 +8,7 @@ public record class Asunto
     public Asunto(string descripcion)
     {
         if (string.IsNullOrWhiteSpace(descripcion)|| descripcion.Length > 200)
-            throw new ArgumentException("El asunto no puede estar vacío o exceder 200 caracteres", nameof(descripcion));
+            throw new DominioException("El asunto no puede estar vacío o exceder 200 caracteres");
         Descripcion = descripcion;
     }
 }
