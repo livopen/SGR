@@ -45,7 +45,7 @@ public class Actuacion
         Id = id;
         ReclamoId = reclamoId;
         Tipo = tipo;
-        Detalle = detalle ?? throw new ArgumentNullException(nameof(detalle));
+        Detalle = detalle ?? throw new DominioException("El detalle de la actuación no puede ser nulo");
         FechaCreacion = fechaCreacion;
         FechaUltimaModificacion = fechaUltimaModificacion;
         UsuarioUltimoCambio = usuarioUltimoCambio;
