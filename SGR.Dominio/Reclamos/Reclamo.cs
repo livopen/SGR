@@ -1,5 +1,6 @@
 using System;
 using SGR.Dominio.Comun;
+using SGR.Dominio.Actuaciones;
 namespace SGR.Dominio.Reclamos;
 
 public class Reclamo
@@ -23,7 +24,7 @@ public class Reclamo
     private Reclamo(Guid id, Asunto asunto, DateTime fechaCreacion, DateTime fechaUltimaModificacion, Guid usuarioUltimoCambio, EstadoReclamo estado)
     {
         if (fechaUltimaModificacion < fechaCreacion)
-            throw new ArgumentException("La fecha de última modificación no puede ser anterior a la fecha de creación", nameof(fechaUltimaModificacion));
+            throw new DominioException("La fecha de última modificación no puede ser anterior a la fecha de creación");
         Id = id;
         Asunto = asunto ?? throw new DominioException("El asunto no puede ser nulo");
         FechaCreacion = fechaCreacion;
@@ -35,6 +36,7 @@ public class Reclamo
     {
         return new Reclamo(id, asunto, fechaCreacion, fechaUltimaModificacion, usuarioUltimoCambio, estado);
     }
+    
     public void ModificarAsunto(Asunto nuevoAsunto, Guid usuarioUltimoCambio)
     {
         if (nuevoAsunto == null)
@@ -43,4 +45,48 @@ public class Reclamo
         FechaUltimaModificacion = DateTime.UtcNow;
         UsuarioUltimoCambio = usuarioUltimoCambio;
     }
+
+    public void CambiarEstado(EstadoReclamo nuevoEstado, Guid usuarioUltimoCambio)
+    {
+        Estado = nuevoEstado;
+        FechaUltimaModificacion = DateTime.UtcNow;
+        UsuarioUltimoCambio = usuarioUltimoCambio;
+    }
+  public bool ActualizarEstado(TipoActuacion? ultimoTipo, Guid idUsuario)
+{
+    EstadoReclamo nuevoEstadoEsperado;
+    if (ultimoTipo == null)
+    {
+        nuevoEstadoEsperado = EstadoReclamo.Recibido;
+    }
+    else
+    {
+        switch (ultimoTipo)
+        {
+            case TipoActuacion.Inspeccion:
+                nuevoEstadoEsperado = EstadoReclamo.EnInspeccion;
+                break;
+            case TipoActuacion.OrdenDeTrabajo:
+                nuevoEstadoEsperado = EstadoReclamo.EnEjecucion;
+                break;
+            case TipoActuacion.TrabajoRealizado:
+                nuevoEstadoEsperado = EstadoReclamo.Resuelto;
+                break;
+            case TipoActuacion.Archivo:
+                nuevoEstadoEsperado = EstadoReclamo.Cerrado;
+                break;
+            default:
+                // Para Observacion o RespuestaAlVecino, no hay cambios
+                return false; 
+        }
+    }
+    if (Estado != nuevoEstadoEsperado)
+    {
+        CambiarEstado(nuevoEstadoEsperado, idUsuario);
+        return true; 
+    }
+
+    return false; 
+}
+  
 }
