@@ -1,6 +1,11 @@
 namespace SGR.Aplicacion.Autorizacion;
 
-public class Permiso
+public enum Permiso
 {
-
+    ReclamoAlta, 
+    ReclamoBaja, 
+    ReclamoModificacion, 
+    ActuacionAlta, 
+    ActuacionBaja, 
+    ActuacionModificacion
 }
