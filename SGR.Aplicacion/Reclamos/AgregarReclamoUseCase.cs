@@ -15,20 +15,20 @@ public class AgregarReclamoUseCase
     public AgregarReclamoResponse Ejecutar(AgregarReclamoRequest request)
     {
         // 1. Control de autorización
-       if (!_ServicioAutorizacion.PoseeElPermiso(request.IdUsuario, Permiso.ReclamoAlta.ToString()))
+       if (!_ServicioAutorizacion.PoseeElPermiso(Guid.Parse(request.IdUsuario), Permiso.ReclamoAlta.ToString()))
             throw new AutorizacionException("No autorizado.");
 
         // 2. Creación del objeto de negocio
         var asuntoNuevo = new Asunto(request.asunto); 
-        var reclamoNuevo = new Reclamo(asuntoNuevo, request.IdUsuario);
+        var reclamoNuevo = new Reclamo(asuntoNuevo,Guid.Parse(request.IdUsuario));
 
         // 3. El repositorio local "registra" el Reclamo 
         _repositorio.Agregar(reclamoNuevo);
         
         // 4. Retornamos la respuesta
-        return new AgregarReclamoResponse(reclamoNuevo.Id, reclamoNuevo.Asunto.Descripcion , DateTime.Now);
+        return new AgregarReclamoResponse(reclamoNuevo.Id.ToString(), reclamoNuevo.Asunto.Descripcion , DateTime.Now);
     }
 }
 
-public record AgregarReclamoRequest(string asunto, Guid IdUsuario);
-public record AgregarReclamoResponse(Guid IdReclamo, string asunto, DateTime FechaCreacion);
+public record AgregarReclamoRequest(string asunto, string IdUsuario);
+public record AgregarReclamoResponse(string IdReclamo, string asunto, DateTime FechaCreacion);
