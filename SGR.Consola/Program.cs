@@ -1,28 +1,4 @@
-﻿/*
-
-El proyecto ejecutable actuará como nuestra interfaz de usuario y como Composition Root.
-
-En el Program.cs se deberán instanciar las implementaciones de los repositorios y servicios (Infraestructura)
-y pasárselas por constructor a los Casos de Uso (Aplicación).
-
-Simular un flujo de ejecución interactuando con los Casos de Uso mediante la creación de DTOs.
-
-Se debe probar el "Camino Feliz": crear reclamos, agregarles actuaciones que cambien su estado 
-(por ejemplo Inspeccion → OrdenDeTrabajo → TrabajoRealizado), agregar una Observacion y verificar que el 
-estado no cambia, eliminar la última actuación y verificar que el estado se recalcula, cambiar el estado 
-manualmente y listar.
-
-Se deben probar los "Caminos de Error": intentar crear un reclamo con asunto vacío o de más de 200 caracteres 
-para ver cómo actúa el Dominio, agregar una actuación a un reclamo inexistente, y cambiar temporalmente el 
-retorno del AutorizacionProvisionalService a false para corroborar que se lanza la AutorizacionException.
-
-Utilizar bloques try/catch para capturar y mostrar mensajes amigables al usuario, diferenciando 
-DominioException, AutorizacionException y errores generales.
-
-
-*/
-
-using SGR.Dominio;
+﻿using SGR.Dominio;
 using SGR.Aplicacion;
 using SGR.Infraestructura;
 
@@ -52,8 +28,63 @@ var modificarAsuntoReclamo = new ModificarAsuntoReclamo(reclamoRepository, autor
 var obtenerReclamoPorIdUseCase = new ObtenerReclamoPorIdUseCase(reclamoRepository,actuacionRepository); 
 
 
+// solo van a ser esqueletos, se vva a modificar posteriormente 
+
 // camino feliz
 try
-catch 
+{
+    // 1. cereo el reclamo y me lo guardo
+    var requestReclamo = new AgregarReclamoRequest();
+    var responseReclamo = agregarReclamoUseCase.Ejecutar(requestReclamo);
+    var reclamoId = responseReclamo.Id;
+    Console.WriteLine("poner algo");
+
+    // 2. agrego las actuaciones
+    var reqAct1 = new AgregarActuacionRequest();
+    var reqAct2 = new AgregarActuacionRequest();
+    var reqAct3 = new AgregarActuacionRequest();
+    agregarActuacionUseCase.Ejecutar(reqAct1);
+    Console.WriteLine("poner algo");
+    agregarActuacionUseCase.Ejecutar(reqAct2);
+    Console.WriteLine("poner algo");
+    agregarActuacionUseCase.Ejecutar(reqAct3);
+    Console.WriteLine("poner algo");
+
+
+    // 3. Agrego una Observacion y verifico que el estado no cambia
+    var reqAct4 = new AgregarActuacionRequest();
+    var resAct4 = agregarActuacionUseCase.Ejecutar(reqAct4);
+    Console.WriteLine("poner algo");
+
+    // 4. Elimino la ultima actuacion
+    var reqEliminarAct = new EliminarActuacionRequest();
+    eliminarActuacionUseCase.Ejecutar(reqEliminarAct);
+    Console.WriteLine("poner algo");
+
+    // 5. cambio el estado
+    var reqCambioEstado = new CambiarEstadoReclamoRequest();
+    cambiarEstadoReclamoUseCase.Ejecutar(reqCambioEstado);
+    Console.WriteLine("poner algo");
+
+    // 6.imprimir el listado 
+    var listadoResponse = listarTodosReclamosUseCase.Ejecutar(new ListarTodosReclamosResponse());
+    Console.WriteLine("poner algo");
+    foreach (var dto in listadoResponse.Reclamos)
+    {
+        Console.WriteLine("poner algo");
+    }
+}
+catch (DominioException ex)
+{
+    Console.WriteLine("poner algo");
+}
+catch (AutorizacionException ex)
+{
+    Console.WriteLine("poner algo");
+}
+catch (Exception ex)
+{
+    Console.WriteLine("poner algo");
+}
 
 // cammino malo
