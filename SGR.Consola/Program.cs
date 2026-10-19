@@ -6,6 +6,9 @@ IActuacionRepository actuacionRepository= new ActuacionTxtRepository();
 IReclamoRepository reclamoRepository= new ReclamoTxtRepository();
 IAutorizacionService autorizacionProvisionalService = new AutorizacionProvisionalService ();
 
+// probablemente todos tengan una interfaz de comportamiento
+// si ese es el caso debo instanciar con un array que guarde interfaz
+
 var actualizacionEstadoReclamoService = new ActualizacionEstadoReclamoService (); // no tiene codigo
 
 var agregarActuacionUseCase = new AgregarActuacionUseCase(); // no tiene codigo
@@ -34,39 +37,32 @@ var obtenerReclamoPorIdUseCase = new ObtenerReclamoPorIdUseCase(reclamoRepositor
 try
 {
     // 1. cereo el reclamo y me lo guardo
-    var requestReclamo = new AgregarReclamoRequest();
-    var responseReclamo = agregarReclamoUseCase.Ejecutar(requestReclamo);
-    var reclamoId = responseReclamo.Id;
+    var responseReclamo = agregarReclamoUseCase.Ejecutar(new AgregarReclamoRequest(););
+    var reclamoId = responseReclamo.Id;//no la mato porque se usa mas adelante
     Console.WriteLine("poner algo");
 
     // 2. agrego las actuaciones
-    var reqAct1 = new AgregarActuacionRequest();
-    var reqAct2 = new AgregarActuacionRequest();
-    var reqAct3 = new AgregarActuacionRequest();
-    agregarActuacionUseCase.Ejecutar(reqAct1);
+    agregarActuacionUseCase.Ejecutar(new AgregarActuacionRequest(););
     Console.WriteLine("poner algo");
-    agregarActuacionUseCase.Ejecutar(reqAct2);
+    agregarActuacionUseCase.Ejecutar(new AgregarActuacionRequest(););
     Console.WriteLine("poner algo");
-    agregarActuacionUseCase.Ejecutar(reqAct3);
+    agregarActuacionUseCase.Ejecutar(new AgregarActuacionRequest(););
     Console.WriteLine("poner algo");
 
 
     // 3. Agrego una Observacion y verifico que el estado no cambia
-    var reqAct4 = new AgregarActuacionRequest();
-    var resAct4 = agregarActuacionUseCase.Ejecutar(reqAct4);
+    var resAct4 = agregarActuacionUseCase.Ejecutar( new AgregarActuacionRequest(););
     Console.WriteLine("poner algo");
 
     // 4. Elimino la ultima actuacion
-    var reqEliminarAct = new EliminarActuacionRequest();
-    eliminarActuacionUseCase.Ejecutar(reqEliminarAct);
+    eliminarActuacionUseCase.Ejecutar(new EliminarActuacionRequest(););
     Console.WriteLine("poner algo");
 
     // 5. cambio el estado
-    var reqCambioEstado = new CambiarEstadoReclamoRequest();
-    cambiarEstadoReclamoUseCase.Ejecutar(reqCambioEstado);
+    cambiarEstadoReclamoUseCase.Ejecutar(new CambiarEstadoReclamoRequest(););
     Console.WriteLine("poner algo");
 
-    // 6.imprimir el listado 
+    // 6.imprimo el listado 
     var listadoResponse = listarTodosReclamosUseCase.Ejecutar(new ListarTodosReclamosResponse());
     Console.WriteLine("poner algo");
     foreach (var dto in listadoResponse.Reclamos)
@@ -76,15 +72,114 @@ try
 }
 catch (DominioException ex)
 {
-    Console.WriteLine("poner algo");
+    Console.WriteLine("mensaje para dominio");
+}
+catch (EntidadNoEncontradaException ex){
+    Console.WriteLine("mensaje para la entidad");
 }
 catch (AutorizacionException ex)
 {
-    Console.WriteLine("poner algo");
+    Console.WriteLine("mensaje para la autorizacion");
+}
+catch(AplicacionExeption){
+    Console.WriteLine("mensaje para la aplicacion");
 }
 catch (Exception ex)
 {
-    Console.WriteLine("poner algo");
+    Console.WriteLine("mensaje para Excepciones de .net");
 }
 
-// cammino malo
+// cammino malo dominio
+
+try {
+    var responseReclamo = agregarReclamoUseCase.Ejecutar(new AgregarReclamoRequest());
+}
+catch (DominioException ex)
+{
+    Console.WriteLine("mensaje para dominio");
+}
+catch (EntidadNoEncontradaException ex){
+    Console.WriteLine("mensaje para la entidad");
+}
+catch (AutorizacionException ex)
+{
+    Console.WriteLine("mensaje para la autorizacion");
+}
+catch(AplicacionExeption){
+    Console.WriteLine("mensaje para la aplicacion");
+}
+catch (Exception ex)
+{
+    Console.WriteLine("mensaje para Excepciones de .net");
+}
+
+
+// cammino malo entidad
+try {
+    // codigo 
+}
+catch (DominioException ex)
+{
+    Console.WriteLine("mensaje para dominio");
+}
+catch (EntidadNoEncontradaException ex){
+    Console.WriteLine("mensaje para la entidad");
+}
+catch (AutorizacionException ex)
+{
+    Console.WriteLine("mensaje para la autorizacion");
+}
+catch(AplicacionExeption){
+    Console.WriteLine("mensaje para la aplicacion");
+}
+catch (Exception ex)
+{
+    Console.WriteLine("mensaje para Excepciones de .net");
+}
+
+
+// cammino malo autorizacion
+try {
+    // codigo 
+}
+catch (DominioException ex)
+{
+    Console.WriteLine("mensaje para dominio");
+}
+catch (EntidadNoEncontradaException ex){
+    Console.WriteLine("mensaje para la entidad");
+}
+catch (AutorizacionException ex)
+{
+    Console.WriteLine("mensaje para la autorizacion");
+}
+catch(AplicacionExeption){
+    Console.WriteLine("mensaje para la aplicacion");
+}
+catch (Exception ex)
+{
+    Console.WriteLine("mensaje para Excepciones de .net");
+}
+
+// cammino malo aplicacion
+try {
+    // codigo 
+}
+catch (DominioException ex)
+{
+    Console.WriteLine("mensaje para dominio");
+}
+catch (EntidadNoEncontradaException ex){
+    Console.WriteLine("mensaje para la entidad");
+}
+catch (AutorizacionException ex)
+{
+    Console.WriteLine("mensaje para la autorizacion");
+}
+catch(AplicacionExeption){
+    Console.WriteLine("mensaje para la aplicacion");
+}
+catch (Exception ex)
+{
+    Console.WriteLine("mensaje para Excepciones de .net");
+}
