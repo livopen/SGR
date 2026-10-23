@@ -8,4 +8,5 @@ public interface IActuacionRepository
     void Modificar(Actuacion actuacion);
     void Eliminar(Guid id);
     IEnumerable<Actuacion> ObtenerActuacionesIdReclamo(Guid id);
+    IEnumerable<Actuacion> ObtenerTodos();
 }
