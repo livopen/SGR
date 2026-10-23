@@ -6,7 +6,12 @@ public class CambiarEstadoReclamoUseCase
 {
     private readonly IReclamoRepository _reclamoRepo;
     private readonly IAutorizacionService _servicioAutorizacion;
-    public CambiarEstadoExpedienteResponse Ejecutar(CambiarEstadoExpedienteRequest request)
+    public CambiarEstadoReclamoUseCase(IReclamoRepository reclamoRepository, IAutorizacionService autorizacionService)
+    {
+        _reclamoRepo = reclamoRepository;
+        _servicioAutorizacion = autorizacionService;
+    }
+    public CambiarEstadoReclamoResponse Ejecutar(CambiarEstadoReclamoRequest request)
     {
         // 1. Validar permisos
         if (!_servicioAutorizacion.PoseeElPermiso(Guid.Parse(request.IdUsuario), Permiso.ReclamoModificacion.ToString()))
@@ -16,7 +21,7 @@ public class CambiarEstadoReclamoUseCase
 
         // 2. Buscar la entidad usando el repositorio del constructor primario
         var reclamo = _reclamoRepo.ObtenerPorId(Guid.Parse(request.reclamoId))
-            ?? throw new EntidadNoEncontradaException("No se encontró el expediente con el ID provisto.");
+            ?? throw new EntidadNoEncontradaException("No se encontró el reclamo con el ID provisto.");
 
         // Verifico que el estado nuevo sea correcto
         if (!Enum.TryParse<EstadoReclamo>(request.NuevoEstado, true, out var estadoNuevoValido))
@@ -31,8 +36,8 @@ public class CambiarEstadoReclamoUseCase
         _reclamoRepo.Modificar(reclamo);
 
         // 5. Retornamos la respuesta
-        return new CambiarEstadoExpedienteResponse(estadoNuevoValido.ToString());
+        return new CambiarEstadoReclamoResponse(estadoNuevoValido.ToString());
     }
 }
-public record CambiarEstadoExpedienteRequest(string IdUsuario, string reclamoId, string NuevoEstado);
-public record CambiarEstadoExpedienteResponse(string NuevoEstado);
+public record CambiarEstadoReclamoRequest(string IdUsuario, string reclamoId, string NuevoEstado);
+public record CambiarEstadoReclamoResponse(string NuevoEstado);

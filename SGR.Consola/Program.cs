@@ -1,219 +1,149 @@
-﻿using SGR.Dominio;
-using SGR.Aplicacion;
-using SGR.Infraestructura;
+﻿using SGR.Dominio.Comun;
+using SGR.Aplicacion.Comun;
+using SGR.Aplicacion.Autorizacion;
+using SGR.Infraestructura.Actuaciones;
+using SGR.Infraestructura.Reclamos;
+using SGR.Infraestructura.Autorizacion;
+using SGR.Aplicacion.Reclamos;
+using SGR.Aplicacion.Actuaciones;
 
-IActuacionRepository actuacionRepository= new ActuacionTxtRepository();
-IReclamoRepository reclamoRepository= new ReclamoTxtRepository();
-IAutorizacionService autorizacionProvisionalService = new AutorizacionProvisionalService ();
+Console.WriteLine("==================================================");
+Console.WriteLine(" SISTEMA DE GESTIÓN DE RECLAMOS (SGR) - PRUEBAS");
+Console.WriteLine("==================================================\n");
 
-// probablemente todos tengan una interfaz de comportamiento
-// si ese es el caso debo instanciar con un array que guarde interfaz
+// ==========================================
+// 1. COMPOSITION ROOT (Configuración DI)
+// ==========================================
+// Instanciamos los repositorios y servicios de Infraestructura
+var actuacionRepository = new ActuacionTxtRepository();
+var reclamoRepository = new ReclamoTxtRepository();
+var autorizacionService = new AutorizacionProvisionalService(); 
+var actualizacionEstadoService = new ActualizacionEstadoReclamoService(reclamoRepository, actuacionRepository);
 
-var actualizacionEstadoReclamoService = new ActualizacionEstadoReclamoService (); // no tiene codigo
+// Instanciamos los Casos de Uso (Aplicación) pasándoles las dependencias
+var agregarReclamoUseCase = new AgregarReclamoUseCase(reclamoRepository, autorizacionService);
+var agregarActuacionUseCase = new AgregarActuacionUseCase(actuacionRepository, reclamoRepository, autorizacionService, actualizacionEstadoService);
+var eliminarActuacionUseCase = new EliminarActuacionUseCase(actuacionRepository, reclamoRepository, autorizacionService, actualizacionEstadoService);
+var listarTodosReclamosUseCase = new ListarTodosReclamosUseCase(reclamoRepository);
+// Nota: Se asume que estos Casos de Uso tienen los constructores definidos o se ajustarán en el código final.
+var cambiarEstadoReclamoUseCase = new CambiarEstadoReclamoUseCase(reclamoRepository, autorizacionService); 
+var obtenerReclamoPorIdUseCase = new ObtenerReclamoPorIdUseCase(reclamoRepository, actuacionRepository);
 
-var agregarActuacionUseCase = new AgregarActuacionUseCase(); // no tiene codigo
-var eliminarActuacionUseCase = new EliminarActuacionUseCase(); // no tiene codigo
-var obtenerActuacionPorIdUseCase = new ObtenerActuacionPorIdUseCase(); // no tiene codigo
-var obtenerActuacionesPorIdReclamoUseCase = new ObtenerActuacionesPorIdReclamoUseCase(); // no tiene codigo
+// Variables globales para la simulación
+string idUsuarioSimulado = Guid.NewGuid().ToString();
+string reclamoIdGenerado = string.Empty;
+string ultimaActuacionId = string.Empty;
 
-// el use case que falta
-var modificarActuacionUseCase = new ModificarActuacionUseCase(); // no existe 
+// ==========================================
+// 2. CAMINO FELIZ (Flujo de éxito)
+// ==========================================
+Console.WriteLine(">>> INICIANDO PRUEBAS: CAMINO FELIZ <<<\n");
 
-
-// este tiene el constructor definido
-var agregarReclamoUseCase = new AgregarReclamoUseCase(reclamoRepository, autorizacionProvisionalService );
-
-// estos no tiene constructor definido
-var cambiarEstadoReclamoUseCase = new CambiarEstadoReclamoUseCase(reclamoRepository, autorizacionProvisionalService);
-var eliminarReclamoUseCase = new EliminarReclamoUseCase(reclamoRepository, autorizacionProvisionalService, actuacionRepository);
-var listarTodosReclamosUseCase = new ListarTodosReclamosUseCase(reclamoRepository); 
-var modificarAsuntoReclamo = new ModificarAsuntoReclamo(reclamoRepository, autorizacionProvisionalService);
-var obtenerReclamoPorIdUseCase = new ObtenerReclamoPorIdUseCase(reclamoRepository,actuacionRepository); 
-
-
-// solo van a ser esqueletos, se vva a modificar posteriormente 
-
-// camino feliz
 try
 {
-    // 1. cereo el reclamo y me lo guardo
-    var requestReclamo = new AgregarReclamoRequest("arbol caido","34A", new DateTime(2026,08,25));
+    // A. Crear un Reclamo
+    Console.WriteLine("A. Creando un nuevo reclamo...");
+    var requestReclamo = new AgregarReclamoRequest("Bache peligroso en la avenida", idUsuarioSimulado);
     var responseReclamo = agregarReclamoUseCase.Ejecutar(requestReclamo);
-    var reclamoId = responseReclamo.IdReclamo;
-    Console.WriteLine($"se guardo correctamente el reclamo, el id del reclamo es {reclamoId}");
+    reclamoIdGenerado = responseReclamo.IdReclamo;
+    Console.WriteLine($"[ÉXITO] Reclamo creado con ID: {reclamoIdGenerado}\n");
 
-    // 2. agrego las actuaciones
-    var requestAgActuacion1 = new AgregarActuacionRequest(/*datos*/)
-    agregarActuacionUseCase.Ejecutar(requestActuacion1);
-    Console.WriteLine($"se agrego correctamente la actuacion........");
+    // B. Agregar actuaciones que cambian el estado (Inspeccion -> OrdenDeTrabajo -> TrabajoRealizado)
+    Console.WriteLine("B. Agregando actuaciones que mutan el estado...");
+    
+    var reqInspeccion = new AgregarActuacionRequest(reclamoIdGenerado, "Inspeccion", "Se verificó el bache", idUsuarioSimulado);
+    agregarActuacionUseCase.Ejecutar(reqInspeccion);
+    Console.WriteLine($"[ÉXITO] Actuación 'Inspección' agregada. Estado esperado: EnInspeccion.");
 
-    var requestAgActuacion2 = new AgregarActuacionRequest(/*datos*/);
-    agregarActuacionUseCase.Ejecutar(requestActuacion2);
-    Console.WriteLine($"se agrego correctamente la actuacion.........");
+    var reqOrden = new AgregarActuacionRequest(reclamoIdGenerado, "OrdenDeTrabajo", "Se solicitó asfalto", idUsuarioSimulado);
+    agregarActuacionUseCase.Ejecutar(reqOrden);
+    Console.WriteLine($"[ÉXITO] Actuación 'OrdenDeTrabajo' agregada. Estado esperado: EnEjecucion.");
 
-    var requestAgActuacion3 = new AgregarActuacionRequest(/*datos*/);
-    agregarActuacionUseCase.Ejecutar(requestActuacion3);
-    Console.WriteLine($"se agrego correctamente la actuacion.......");
+    var reqTrabajo = new AgregarActuacionRequest(reclamoIdGenerado, "TrabajoRealizado", "Bache tapado", idUsuarioSimulado);
+    var resTrabajo = agregarActuacionUseCase.Ejecutar(reqTrabajo);
+    ultimaActuacionId = resTrabajo.IdReclamo; // El response devuelve el Id de la Actuacion generada
+    Console.WriteLine($"[ÉXITO] Actuación 'TrabajoRealizado' agregada. Estado esperado: Resuelto.\n");
 
+    // C. Agregar una Observacion (no debería cambiar el estado)
+    Console.WriteLine("C. Agregando una Observación...");
+    var reqObservacion = new AgregarActuacionRequest(reclamoIdGenerado, "Observacion", "Los vecinos agradecen", idUsuarioSimulado);
+    var resObservacion = agregarActuacionUseCase.Ejecutar(reqObservacion);
+    Console.WriteLine($"[ÉXITO] Observación agregada con ID: {resObservacion.IdReclamo}. El estado debe seguir siendo Resuelto.\n");
 
-    // 3. Agrego una Observacion y verifico que el estado no cambia
-      // cambiar nombre  
-      // puede estar mal 
-    var requestAgActuacion =  new AgregarActuacionRequest(/*datos*/);
-    var responseActuacion = agregarActuacionUseCase.Ejecutar(requestActuacion);
-    Console.WriteLine($"se agrego correctamente la observacion........."); // en este mepa que no era asi el print
+    // D. Eliminar la última actuación y verificar recalculo
+    Console.WriteLine("D. Eliminando la observación para verificar recálculo de estado...");
+    var reqEliminar = new EliminarActuacionRequest(resObservacion.IdReclamo, idUsuarioSimulado);
+    eliminarActuacionUseCase.Ejecutar(reqEliminar);
+    Console.WriteLine($"[ÉXITO] Observación eliminada. El estado debe mantenerse consistente.\n");
 
-    // 4. Elimino la ultima actuacion
-    eliminarActuacionUseCase.Ejecutar(ObtenerActuacionPorIdUseCase.Ejecutar(/*request de algo.id*/));
-    Console.WriteLine($"se elimino correctamente la ultima actuacion.........");
+    // E. Cambiar el estado manualmente
+    Console.WriteLine("E. Cambiando el estado manualmente a 'Cerrado'...");
+    var reqCambioEstado = new CambiarEstadoReclamoRequest(idUsuarioSimulado, reclamoIdGenerado, "Cerrado");
+    cambiarEstadoReclamoUseCase.Ejecutar(reqCambioEstado);
+    Console.WriteLine($"[ÉXITO] Estado cambiado correctamente a 'Cerrado'.\n");
 
-    // 5. cambio el estado
-    cambiarEstadoReclamoUseCase.Ejecutar(new CambiarEstadoExpedienteRequest(requestReclamo.IdUsuario,reclamoId, "en proceso"));
-    Console.WriteLine("se pudo cambiar correctamente el estado del reclamo");
-
-    // 6.imprimo el listado 
-    var listadoResponse = listarTodosReclamosUseCase.Ejecutar(new ListarTodosReclamosRequest());
-    Console.WriteLine(" los reclamos que se hicieron son:");
-    foreach (var dto in listadoResponse.Reclamos)
+    // F. Listar todos los reclamos
+    Console.WriteLine("F. Listando los reclamos registrados...");
+    var listaReclamos = listarTodosReclamosUseCase.Ejecutar(new ListarTodosReclamosRequest());
+    foreach (var reclamo in listaReclamos.lista)
     {
-        Console.WriteLine("poner algo"); // no se que poner 
+        Console.WriteLine($" -> ID: {reclamo.Id} | Asunto: {reclamo.Asunto} | Estado: {reclamo.Estado}");
     }
+    Console.WriteLine();
 }
-catch (DominioException ex)
-{
-    Console.WriteLine($"lamentamos las molestias, se detecto un error en el sistema: {ex.message}\n");
-}
-catch (EntidadNoEncontradaException ex){
-    Console.WriteLine($"lamentamos las molestias, se detecto un error en el sistema: {ex.message}\n");
-}
-catch (AutorizacionException ex)
-{
-    Console.WriteLine($"lamentamos las molestias, se detecto un error en el sistema: {ex.message}\n");
-}
-catch(AplicacionExeption){
-    Console.WriteLine($"lamentamos las molestias, se detecto un error en el sistema: {ex.message}\n");
-}
-catch (Exception ex)
-{
-    Console.WriteLine($"lamentamos las molestias, se detecto un error en el sistema: {ex.message}\n");
-}
+catch (DominioException ex) { Console.WriteLine($"[ERROR DE DOMINIO] {ex.Message}"); }
+catch (EntidadNoEncontradaException ex) { Console.WriteLine($"[ERROR DE ENTIDAD] {ex.Message}"); }
+catch (AutorizacionException ex) { Console.WriteLine($"[ERROR DE PERMISOS] {ex.Message}"); }
+catch (AplicacionException ex) { Console.WriteLine($"[ERROR DE APLICACIÓN] {ex.Message}"); }
+catch (Exception ex) { Console.WriteLine($"[ERROR GENERAL] {ex.Message}"); }
 
-// cammino malo reclamo con asunto vacío
+// ==========================================
+// 3. CAMINOS DE ERROR (Casos alternativos)
+// ==========================================
+Console.WriteLine(">>> INICIANDO PRUEBAS: CAMINOS DE ERROR <<<\n");
 
-try {
-    var requestReclamoMalo = new AgregarReclamoRequest("","34A", new DateTime(2026,08,25));
-    var responseReclamoMalo = agregarReclamoUseCase.Ejecutar(requestReclamoMalo);
-}
-catch (DominioException ex)
+// Error 1: Intentar crear reclamo con asunto vacío
+try
 {
-    Console.WriteLine($"lamentamos las molestias, se detecto un error en el sistema: {ex.message}\n");
+    Console.WriteLine("Prueba Error 1: Crear reclamo con asunto vacío...");
+    var requestReclamoMalo = new AgregarReclamoRequest("", idUsuarioSimulado);
+    agregarReclamoUseCase.Ejecutar(requestReclamoMalo);
 }
-catch (EntidadNoEncontradaException ex){
-    Console.WriteLine($"lamentamos las molestias, se detecto un error en el sistema: {ex.message}\n");
-}
-catch (AutorizacionException ex)
+catch (DominioException ex) { Console.WriteLine($"[ERROR ESPERADO - DOMINIO] {ex.Message}\n"); }
+catch (Exception ex) { Console.WriteLine($"[FALLO INESPERADO] {ex.Message}\n"); }
+
+// Error 2: Agregar actuación a un reclamo inexistente
+try
 {
-    Console.WriteLine($"lamentamos las molestias, se detecto un error en el sistema: {ex.message}\n");
+    Console.WriteLine("Prueba Error 2: Agregar actuación a un reclamo inexistente...");
+    string idFalso = Guid.NewGuid().ToString();
+    var requestActuacionHuerfana = new AgregarActuacionRequest(idFalso, "Observacion", "Detalle x", idUsuarioSimulado);
+    agregarActuacionUseCase.Ejecutar(requestActuacionHuerfana);
 }
-catch(AplicacionExeption){
-    Console.WriteLine($"lamentamos las molestias, se detecto un error en el sistema: {ex.message}\n");
-}
-catch (Exception ex)
+catch (EntidadNoEncontradaException ex) { Console.WriteLine($"[ERROR ESPERADO - ENTIDAD] {ex.Message}\n"); }
+catch (Exception ex) { Console.WriteLine($"[FALLO INESPERADO] {ex.Message}\n"); }
+
+// Error 3: Simular rechazo de permisos (Autorización)
+try
 {
-    Console.WriteLine($"lamentamos las molestias, se detecto un error en el sistema: {ex.message}\n");
+    Console.WriteLine("Prueba Error 3: Intentar acción sin permisos...");
+    
+    // Creamos un servicio mockeado "al vuelo" que siempre retorna false
+    IAutorizacionService servicioDenegado = new AutorizacionProvisionalDenegada();
+    var agregarReclamoSinPermisos = new AgregarReclamoUseCase(reclamoRepository, servicioDenegado);
+    
+    var requestSinPermiso = new AgregarReclamoRequest("Asunto válido", idUsuarioSimulado);
+    agregarReclamoSinPermisos.Ejecutar(requestSinPermiso);
 }
+catch (AutorizacionException ex) { Console.WriteLine($"[ERROR ESPERADO - PERMISOS] {ex.Message}\n"); }
+catch (Exception ex) { Console.WriteLine($"[FALLO INESPERADO] {ex.Message}\n"); }
 
-/*
+Console.WriteLine("==================================================");
+Console.WriteLine(" PRUEBAS FINALIZADAS");
+Console.WriteLine("==================================================");
 
-Se debe probar el "Camino Feliz": crear reclamos, agregarles actuaciones que cambien su estado (por ejemplo 
-Inspeccion → OrdenDeTrabajo → TrabajoRealizado), agregar una Observacion y verificar que el estado no cambia,
-eliminar la última actuación y verificar que el estado se recalcula, cambiar el estado manualmente y listar.
-
-Se deben probar los "Caminos de Error": intentar crear un reclamo con asunto vacío o de más de 200 caracteres
-para ver cómo actúa el Dominio, agregar una actuación a un reclamo inexistente, y cambiar temporalmente el 
-retorno del AutorizacionProvisionalService a false para corroborar que se lanza la AutorizacionException.
-
-Utilizar bloques try/catch para capturar y mostrar mensajes amigables al usuario, diferenciando 
-DominioException, AutorizacionException y errores generales.
-
-
-*/
-
-// cammino malo agregar una actuación a un reclamo inexistente
-try {                                           
-    var requestActuacionHuerfana = new AgregarActuacionRequest(
-        //ReclamoId 
-        //Tipo: TipoActuacion Observacion
-        //Detalle
-        //IdUsuario
-    );
-
-    agregarActuacionUseCase.Ejecutar(requestActuacionHuerfana); 
-}
-catch (DominioException ex)
+// Clase auxiliar para la Prueba de Error 3 (Servicio que siempre deniega)
+public class AutorizacionProvisionalDenegada : IAutorizacionService
 {
-    Console.WriteLine($"lamentamos las molestias, se detecto un error en el sistema: {ex.message}\n");
-}
-catch (EntidadNoEncontradaException ex){
-    Console.WriteLine($"lamentamos las molestias, se detecto un error en el sistema: {ex.message}\n");
-}
-catch (AutorizacionException ex)
-{
-    Console.WriteLine($"lamentamos las molestias, se detecto un error en el sistema: {ex.message}\n");
-}
-catch(AplicacionExeption){
-    Console.WriteLine($"lamentamos las molestias, se detecto un error en el sistema: {ex.message}\n");
-}
-catch (Exception ex)
-{
-    Console.WriteLine($"lamentamos las molestias, se detecto un error en el sistema: {ex.message}\n");
-}
-
-
-// cammino malo retorno del AutorizacionProvisionalService false
-try {
-
-    IAutorizacionService servicioDenegado = new AutorizacionProvisionalService(permitirTodo: false);
-    var agregarReclamoSinPermisosUseCase = new AgregarReclamoUseCase(reclamoRepository, servicioDenegado);
-}
-catch (DominioException ex)
-{
-    Console.WriteLine($"lamentamos las molestias, se detecto un error en el sistema: {ex.message}\n");
-}
-catch (EntidadNoEncontradaException ex){
-    Console.WriteLine($"lamentamos las molestias, se detecto un error en el sistema: {ex.message}\n");
-}
-catch (AutorizacionException ex)
-{
-    Console.WriteLine($"lamentamos las molestias, se detecto un error en el sistema: {ex.message}\n");
-}
-catch(AplicacionExeption){
-    Console.WriteLine($"lamentamos las molestias, se detecto un error en el sistema: {ex.message}\n");
-}
-catch (Exception ex)
-{
-    Console.WriteLine($"lamentamos las molestias, se detecto un error en el sistema: {ex.message}\n");
-}
-
-// cammino malo aplicacion, no se si hay que hacer este try-catch
-try {
-    // codigo
-}
-catch (DominioException ex)
-{
-    Console.WriteLine($"lamentamos las molestias, se detecto un error en el sistema: {ex.message}\n");
-}
-catch (EntidadNoEncontradaException ex){
-    Console.WriteLine($"lamentamos las molestias, se detecto un error en el sistema: {ex.message}\n");
-}
-catch (AutorizacionException ex)
-{
-    Console.WriteLine($"lamentamos las molestias, se detecto un error en el sistema: {ex.message}\n");
-}
-catch(AplicacionExeption){
-    Console.WriteLine($"lamentamos las molestias, se detecto un error en el sistema: {ex.message}\n");
-}
-catch (Exception ex)
-{
-    Console.WriteLine($"lamentamos las molestias, se detecto un error en el sistema: {ex.message}\n");
+    public bool PoseeElPermiso(Guid idUsuario, string permiso) => false;
 }
