@@ -28,7 +28,6 @@ public class Reclamo
 
             throw new DominioException("La fecha de última modificación no puede ser anterior a la fecha de creación");
 
-            throw new DominioException("La fecha de última modificación no puede ser anterior a la fecha de creación");
         Id = id;
         Asunto = asunto ?? throw new DominioException("El asunto no puede ser nulo");
         FechaCreacion = fechaCreacion;
