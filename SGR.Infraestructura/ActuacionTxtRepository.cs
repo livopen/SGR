@@ -1,95 +1,121 @@
+using System.Text.Json;
 using SGR.Aplicacion.Actuaciones;
 using SGR.Dominio.Actuaciones;
-using SGR.Infraestructura.Comun;
 
 namespace SGR.Infraestructura.Actuaciones;
 
-/// <summary>Repositorio de actuaciones respaldado por un archivo JSON Lines (.txt).</summary>
 public sealed class ActuacionTxtRepository : IActuacionRepository
 {
     private readonly string _ruta;
+    private readonly JsonSerializerOptions _opciones = new() { WriteIndented = false };
 
     public ActuacionTxtRepository(string? ruta = null)
     {
         _ruta = ruta ?? Path.Combine(AppContext.BaseDirectory, "Datos", "actuaciones.txt");
+        CrearArchivoSiNoExiste();
     }
 
     public void Agregar(Actuacion actuacion)
     {
         ArgumentNullException.ThrowIfNull(actuacion);
+
         var actuaciones = ObtenerTodos().ToList();
         if (actuaciones.Any(a => a.Id == actuacion.Id))
-            throw new RepositorioException($"Ya existe una actuación con Id {actuacion.Id}.");
+            throw new InvalidOperationException($"Ya existe una actuación con Id {actuacion.Id}.");
+
         actuaciones.Add(actuacion);
-        Guardar(actuaciones);
+        GuardarTodos(actuaciones);
     }
-
-    public Actuacion? ObtenerPorId(Guid id)
-        => ObtenerTodos().FirstOrDefault(a => a.Id == id);
-
-    public IEnumerable<Actuacion> ObtenerTodos()
-        => ArchivoJsonLineas.Leer<ActuacionRegistro>(_ruta).Select(Reconstruir).ToList();
-
-    public IEnumerable<Actuacion> ObtenerPorReclamoId(Guid reclamoId)
-        => ObtenerTodos().Where(a => a.ReclamoId == reclamoId).ToList();
 
     public void Modificar(Actuacion actuacion)
     {
         ArgumentNullException.ThrowIfNull(actuacion);
         var actuaciones = ObtenerTodos().ToList();
         int indice = actuaciones.FindIndex(a => a.Id == actuacion.Id);
-        if (indice < 0) throw new RepositorioException($"No existe la actuación {actuacion.Id} para modificar.");
+
+        if (indice < 0)
+            throw new InvalidOperationException($"No existe la actuación {actuacion.Id} para modificar.");
+
         actuaciones[indice] = actuacion;
-        Guardar(actuaciones);
+        GuardarTodos(actuaciones);
     }
 
     public void Eliminar(Guid id)
     {
         var actuaciones = ObtenerTodos().ToList();
         int eliminados = actuaciones.RemoveAll(a => a.Id == id);
-        if (eliminados == 0) throw new RepositorioException($"No existe la actuación {id} para eliminar.");
-        Guardar(actuaciones);
+
+        if (eliminados == 0)
+            throw new InvalidOperationException($"No existe la actuación {id} para eliminar.");
+
+        GuardarTodos(actuaciones);
     }
 
-    /// <summary>Elimina todas las actuaciones de un reclamo (útil para la baja en cascada).</summary>
-    public void EliminarPorReclamoId(Guid reclamoId)
+    public IEnumerable<Actuacion> ObtenerActuacionesIdReclamo(Guid id)
+        => ObtenerTodos().Where(a => a.ReclamoId == id).ToList();
+
+    private IEnumerable<Actuacion> ObtenerTodos()
     {
-        var actuaciones = ObtenerTodos().ToList();
-        actuaciones.RemoveAll(a => a.ReclamoId == reclamoId);
-        Guardar(actuaciones);
+        if (!File.Exists(_ruta))
+            return Enumerable.Empty<Actuacion>();
+
+        var resultado = new List<Actuacion>();
+        foreach (string linea in File.ReadLines(_ruta))
+        {
+            if (string.IsNullOrWhiteSpace(linea))
+                continue;
+
+            var registro = JsonSerializer.Deserialize<ActuacionRegistro>(linea, _opciones)
+                ?? throw new InvalidDataException("No se pudo leer un registro de actuación.");
+
+            // Al leer se usa el Factory Method de Dominio.
+            resultado.Add(Actuacion.Reconstruir(
+                registro.Id,
+                registro.ReclamoId,
+                Enum.Parse<TipoActuacion>(registro.Tipo),
+                new DetalleActuacion(registro.Detalle),
+                registro.FechaCreacion,
+                registro.FechaUltimaModificacion,
+                registro.UsuarioUltimoCambio));
+        }
+
+        return resultado;
     }
 
-    private void Guardar(IEnumerable<Actuacion> actuaciones)
-        => ArchivoJsonLineas.Sobrescribir(_ruta, actuaciones.Select(a => new ActuacionRegistro
+    private void GuardarTodos(IEnumerable<Actuacion> actuaciones)
+    {
+        CrearArchivoSiNoExiste();
+        var lineas = actuaciones.Select(a => JsonSerializer.Serialize(new ActuacionRegistro
         {
             Id = a.Id,
             ReclamoId = a.ReclamoId,
             Tipo = a.Tipo.ToString(),
-            Detalle = ReconstruccionEntidad.TextoValueObject(a.Detalle),
+            Detalle = a.Detalle.Descripcion,
             FechaCreacion = a.FechaCreacion,
             FechaUltimaModificacion = a.FechaUltimaModificacion,
             UsuarioUltimoCambio = a.UsuarioUltimoCambio
-        }));
+        }, _opciones));
 
-    private static Actuacion Reconstruir(ActuacionRegistro a)
+        File.WriteAllLines(_ruta, lineas);
+    }
+
+    private void CrearArchivoSiNoExiste()
     {
-        var datos = new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase)
-        {
-            ["id"] = a.Id, ["reclamoId"] = a.ReclamoId,
-            ["tipo"] = a.Tipo, ["detalle"] = a.Detalle,
-            ["fechaCreacion"] = a.FechaCreacion,
-            ["fechaUltimaModificacion"] = a.FechaUltimaModificacion,
-            ["usuarioUltimoCambio"] = a.UsuarioUltimoCambio
-        };
-        return ReconstruccionEntidad.Reconstruir<Actuacion>(datos);
+        string? directorio = Path.GetDirectoryName(_ruta);
+        if (!string.IsNullOrEmpty(directorio))
+            Directory.CreateDirectory(directorio);
+
+        if (!File.Exists(_ruta))
+            File.WriteAllText(_ruta, string.Empty);
     }
 
     private sealed class ActuacionRegistro
     {
+        public ActuacionRegistro() { }
         public Guid Id { get; set; }
         public Guid ReclamoId { get; set; }
-        public string Tipo { get; set; } = "";
-        public string Detalle { get; set; } = "";
+        public string Tipo { get; set; } = string.Empty;
+        public string Detalle { get; set; } = string.Empty;
         public DateTime FechaCreacion { get; set; }
         public DateTime FechaUltimaModificacion { get; set; }
         public Guid UsuarioUltimoCambio { get; set; }
