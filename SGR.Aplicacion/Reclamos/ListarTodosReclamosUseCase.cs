@@ -3,7 +3,11 @@ using SGR.Dominio.Reclamos;
 public class ListarTodosReclamosUseCase
 {
     private readonly IReclamoRepository _reclamoRepo;
-    public ListarTodosReclamosResponse Ejecutar(ListarTodosReclamosResponse request)
+    public ListarTodosReclamosUseCase(IReclamoRepository reclamoRepository)
+    {
+        _reclamoRepo = reclamoRepository;
+    }
+    public ListarTodosReclamosResponse Ejecutar(ListarTodosReclamosRequest request)
     {
         // 1. Buscamos todas las entidades del repositorio
         IEnumerable<Reclamo> reclamos = _reclamoRepo.ObtenerTodos();

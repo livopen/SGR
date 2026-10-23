@@ -8,6 +8,11 @@ public class ObtenerReclamoPorIdUseCase
 {
     private readonly IReclamoRepository _reclamoRepo;
     private readonly IActuacionRepository _actuacionRepo;
+    public ObtenerReclamoPorIdUseCase(IReclamoRepository reclamoRepository, IActuacionRepository actuacionRepository)
+    {
+        _reclamoRepo = reclamoRepository;
+        _actuacionRepo = actuacionRepository;
+    }
     public ObtenerReclamoPorIdResponse Ejecutar(ObtenerReclamoPorIdRequest request)
     {
         var reclamo = _reclamoRepo.ObtenerPorId(Guid.Parse(request.IdReclamo));
