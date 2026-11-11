@@ -9,10 +9,16 @@ public class EliminarReclamoUseCase
     private readonly IAutorizacionService _servicioAutorizacion;
     private readonly IActuacionRepository _actuacionRepo;
 
+    public EliminarReclamoUseCase(IReclamoRepository reclamoRepository, IActuacionRepository actuacionRepository, IAutorizacionService autorizacionService)
+    {
+        _reclamoRepo = reclamoRepository;
+        _actuacionRepo = actuacionRepository;
+        _servicioAutorizacion = autorizacionService;
+    }
     public EliminarReclamoResponse Ejecutar(EliminarReclamoRequest request)
     {
         // 1. Validación de Seguridad
-        if (!_servicioAutorizacion.PoseeElPermiso(Guid.Parse(request.UsuarioId), Permiso.ReclamoBaja.ToString()))
+        if (!_servicioAutorizacion.PoseeElPermiso(Guid.Parse(request.UsuarioId), Permiso.ReclamoBaja))
         {
             throw new AutorizacionException("No tenés permisos para eliminar reclamos.");
         }

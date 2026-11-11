@@ -15,7 +15,7 @@ public class AgregarReclamoUseCase
     public AgregarReclamoResponse Ejecutar(AgregarReclamoRequest request)
     {
         // 1. Control de autorización
-       if (!_ServicioAutorizacion.PoseeElPermiso(Guid.Parse(request.IdUsuario), Permiso.ReclamoAlta.ToString()))
+       if (!_ServicioAutorizacion.PoseeElPermiso(Guid.Parse(request.IdUsuario), Permiso.ReclamoAlta))
             throw new AutorizacionException("No autorizado.");
 
         // 2. Creación del objeto de negocio

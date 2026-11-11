@@ -25,7 +25,7 @@ public class AgregarActuacionUseCase
        Guid idReclamo = Guid.Parse(request.idReclamo);
        Guid idUsuario = Guid.Parse(request.IdUsuario);
        //verifico que el usuario este autorizado
-       if (!_ServicioAutorizacion.PoseeElPermiso(idUsuario, Permiso.ReclamoAlta.ToString()))
+       if (!_ServicioAutorizacion.PoseeElPermiso(idUsuario, Permiso.ActuacionAlta))
             throw new AutorizacionException("No autorizado.");
        //verifico que el reclamo exista 
        var reclamo = _reclamoRepo.ObtenerPorId(idReclamo);

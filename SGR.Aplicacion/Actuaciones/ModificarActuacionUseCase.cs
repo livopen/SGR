@@ -26,7 +26,7 @@ public class ModificarActuacionUseCase{
         Guid idActuacion = Guid.Parse(request.idActuacion);
         Guid idUsuario = Guid.Parse(request.idUsuario);
 
-        if (!_autorizacion.PoseeElPermiso(idUsuario, Permiso.ActuacionModificacion.ToString()))
+        if (!_autorizacion.PoseeElPermiso(idUsuario, Permiso.ActuacionModificacion))
             throw new AutorizacionException("El usuario no tiene permisos.");
 
         var actuacion = _actuacionRepo.ObtenerTodos().FirstOrDefault(t => t.Id == idActuacion)
@@ -40,7 +40,7 @@ public class ModificarActuacionUseCase{
 
         actuacion.Modificar(nuevoTipoValido,detalleValido,idUsuario);
 
-        var reclamo = _reclamoRepo.ObtenerPorId(actuacion.Id)
+        var reclamo = _reclamoRepo.ObtenerPorId(actuacion.ReclamoId)
             ?? throw new EntidadNoEncontradaException($"No existe el reclamo asociado al ID proporcionado");
 
         _actuacionRepo.Modificar(actuacion);

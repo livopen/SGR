@@ -7,10 +7,16 @@ public class ModificarAsuntoReclamoUseCase
 {
     private readonly IReclamoRepository _reclamoRepo;
     private readonly IAutorizacionService _autorizacionService;
+
+    public ModificarAsuntoReclamoUseCase(IReclamoRepository reclamoRepository, IAutorizacionService autorizacionService)
+    {
+        _reclamoRepo = reclamoRepository;
+        _autorizacionService = autorizacionService;
+    }
     public ModificarAsuntoReclamoResponse Ejecutar(ModificarAsuntoReclamoRequest request)
     {
         // 1. Validar permisos 
-        if (!_autorizacionService.PoseeElPermiso(Guid.Parse(request.UsuarioId), Permiso.ReclamoModificacion.ToString()))
+        if (!_autorizacionService.PoseeElPermiso(Guid.Parse(request.UsuarioId), Permiso.ReclamoModificacion))
         {
             throw new AutorizacionException($"El usuario {request.UsuarioId} no tiene permisos para modificar Reclamos.");
         }

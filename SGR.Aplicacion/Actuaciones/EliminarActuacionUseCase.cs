@@ -23,13 +23,13 @@ public class EliminarActuacionUseCase
         Guid idActuacion = Guid.Parse(request.IdActuacion);
         Guid idUsuario = Guid.Parse(request.UsuarioId);
 
-        if (!_autorizacion.PoseeElPermiso(idUsuario,Permiso.ActuacionBaja.ToString()))
+        if (!_autorizacion.PoseeElPermiso(idUsuario,Permiso.ActuacionBaja))
             throw new AutorizacionException("El usuario no tiene permisos para eliminar actuaciones.");
 
         var actuacion = _actuacionRepo.ObtenerTodos().FirstOrDefault(t => t.Id == idActuacion)
         ?? throw new EntidadNoEncontradaException($"La actuacion con ID {idActuacion} no existe.");
 
-        Guid reclamoIdAsociado = actuacion.Id;
+        Guid reclamoIdAsociado = actuacion.ReclamoId;
         //Buscamos el expediente completo
         var reclamo = _reclamoRepo.ObtenerPorId(reclamoIdAsociado)
             ?? throw new EntidadNoEncontradaException($"No existe el reclamo asociado con ID {reclamoIdAsociado}");
