@@ -22,8 +22,7 @@ public class ActualizacionEstadoReclamoService
             throw new EntidadNoEncontradaException($"No se encontró el reclamo {reclamo}");
         }
         
-        var actuacionesDelReclamo = this._actuacionRepo.ObtenerActuacionesIdReclamo(reclamo.Id)
-            .Where(t => t.Id == reclamo.Id).ToList();
+        var actuacionesDelReclamo = this._actuacionRepo.ObtenerActuacionesIdReclamo(reclamo.Id).ToList();
         // Determinamos cuál es el "último" basándonos en la FechaCreacion más reciente
         var ultimaActuacion = actuacionesDelReclamo
             .OrderByDescending(t => t.FechaCreacion)

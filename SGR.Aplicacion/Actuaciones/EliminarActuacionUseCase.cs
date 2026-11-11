@@ -29,7 +29,7 @@ public class EliminarActuacionUseCase
         var actuacion = _actuacionRepo.ObtenerTodos().FirstOrDefault(t => t.Id == idActuacion)
         ?? throw new EntidadNoEncontradaException($"La actuacion con ID {idActuacion} no existe.");
 
-        Guid reclamoIdAsociado = actuacion.Id;
+        Guid reclamoIdAsociado = actuacion.ReclamoId;
         //Buscamos el expediente completo
         var reclamo = _reclamoRepo.ObtenerPorId(reclamoIdAsociado)
             ?? throw new EntidadNoEncontradaException($"No existe el reclamo asociado con ID {reclamoIdAsociado}");

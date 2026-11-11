@@ -40,7 +40,7 @@ public class ModificarActuacionUseCase{
 
         actuacion.Modificar(nuevoTipoValido,detalleValido,idUsuario);
 
-        var reclamo = _reclamoRepo.ObtenerPorId(actuacion.Id)
+        var reclamo = _reclamoRepo.ObtenerPorId(actuacion.ReclamoId)
             ?? throw new EntidadNoEncontradaException($"No existe el reclamo asociado al ID proporcionado");
 
         _actuacionRepo.Modificar(actuacion);
