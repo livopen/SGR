@@ -1,0 +1,1 @@
+public record ActuacionDTO(string idActuacion, string tipo, string detalle, DateTime fechaCreacion);

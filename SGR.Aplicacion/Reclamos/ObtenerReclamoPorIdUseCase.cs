@@ -41,4 +41,3 @@ public class ObtenerReclamoPorIdUseCase
 
 public record ObtenerReclamoPorIdRequest(string IdReclamo);
 public record ObtenerReclamoPorIdResponse(string IdReclamo, string asunto, string Estado, List<ActuacionDTO> actuaciones);
-public record ActuacionDTO(string idActuacion, string tipo, string detalle, DateTime fechaCreacion);

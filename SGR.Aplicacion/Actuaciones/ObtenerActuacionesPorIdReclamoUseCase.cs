@@ -22,10 +22,10 @@ public class ObtenerActuacionesPorIdReclamoUseCase{
         IEnumerable<Actuacion> actuacionesDelReclamo = _actuacionRepo.ObtenerActuacionesIdReclamo(IdReclamo);
 
         var listaDTO = actuacionesDelReclamo.Select(t => new ActuacionDTO(
-            Id: t.Id.ToString(),
-            Detalle: t.Detalle.ToString(), 
+            idActuacion: t.Id.ToString(),
             tipo: t.Tipo.ToString(),
-            FechaCreacion: t.FechaCreacion
+            detalle: t.Detalle.ToString(), 
+            fechaCreacion: t.FechaCreacion
         )).ToList();
 
         return new ObtenerActuacionesPorIdReclamoResponse(listaDTO);
@@ -34,10 +34,3 @@ public class ObtenerActuacionesPorIdReclamoUseCase{
 
 public record ObtenerActuacionesPorIdReclamoRequest(string idReclamo);
 public record ObtenerActuacionesPorIdReclamoResponse(List<ActuacionDTO> Actuaciones);
-
-public record ActuacionDTO(
-    string Id, 
-    string Detalle, 
-    string tipo, 
-    DateTime FechaCreacion
-);
