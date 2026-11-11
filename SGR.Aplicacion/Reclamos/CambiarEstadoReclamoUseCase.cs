@@ -14,7 +14,7 @@ public class CambiarEstadoReclamoUseCase
     public CambiarEstadoReclamoResponse Ejecutar(CambiarEstadoReclamoRequest request)
     {
         // 1. Validar permisos
-        if (!_servicioAutorizacion.PoseeElPermiso(Guid.Parse(request.IdUsuario), Permiso.ReclamoModificacion.ToString()))
+        if (!_servicioAutorizacion.PoseeElPermiso(Guid.Parse(request.IdUsuario), Permiso.ReclamoModificacion))
         {
             throw new AutorizacionException("El usuario no tiene permisos para modificar el Reclamo.");
         }

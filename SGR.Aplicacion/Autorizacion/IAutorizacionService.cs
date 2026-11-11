@@ -2,5 +2,5 @@ namespace SGR.Aplicacion.Autorizacion;
 
 public interface IAutorizacionService
 {
-    bool PoseeElPermiso(Guid idUsuario,string permiso);
+    bool PoseeElPermiso(Guid idUsuario,Permiso permiso);
 }

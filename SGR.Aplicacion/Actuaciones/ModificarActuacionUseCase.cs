@@ -26,7 +26,7 @@ public class ModificarActuacionUseCase{
         Guid idActuacion = Guid.Parse(request.idActuacion);
         Guid idUsuario = Guid.Parse(request.idUsuario);
 
-        if (!_autorizacion.PoseeElPermiso(idUsuario, Permiso.ActuacionModificacion.ToString()))
+        if (!_autorizacion.PoseeElPermiso(idUsuario, Permiso.ActuacionModificacion))
             throw new AutorizacionException("El usuario no tiene permisos.");
 
         var actuacion = _actuacionRepo.ObtenerTodos().FirstOrDefault(t => t.Id == idActuacion)
