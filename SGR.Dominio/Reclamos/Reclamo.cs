@@ -29,15 +29,10 @@ public class Reclamo
         if (fechaUltimaModificacion < fechaCreacion)
             throw new DominioException("La fecha de última modificación no puede ser anterior a la fecha de creación");
 
-        if (id == Guid.Empty)
-            throw new DominioException("El Id no puede ser nulo");
-
         Id = id;
-        Asunto = asunto ?? throw new DominioException("El asunto no puede ser nulo");
+        Asunto = asunto;
         FechaCreacion = fechaCreacion;
         FechaUltimaModificacion = fechaUltimaModificacion;
-        if (usuarioUltimoCambio == Guid.Empty)
-            throw new DominioException("El usuario que realiza el cambio no puede ser nulo");
         UsuarioUltimoCambio = usuarioUltimoCambio;
         Estado = estado;
     } // Constructor privado para EF Core
