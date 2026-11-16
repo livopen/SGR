@@ -3,6 +3,7 @@ using SGR.Aplicacion.Reclamos;
 using SGR.Aplicacion.Autorizacion;
 using SGR.Aplicacion.Comun;
 using SGR.Dominio.Reclamos;
+using SGR.Dominio.Usuarios;
 public class ModificarAsuntoReclamoUseCase
 {
     private readonly IReclamoRepository _reclamoRepo;

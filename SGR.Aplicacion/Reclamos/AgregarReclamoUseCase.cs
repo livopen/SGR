@@ -1,6 +1,7 @@
 namespace SGR.Aplicacion.Reclamos;
 using SGR.Dominio.Reclamos;
 using SGR.Aplicacion.Autorizacion;
+using SGR.Dominio.Usuarios;
 public class AgregarReclamoUseCase
 {
     private readonly IReclamoRepository _repositorio;

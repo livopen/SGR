@@ -5,7 +5,7 @@ using SGR.Aplicacion.Autorizacion;
 using SGR.Aplicacion.Comun;
 using SGR.Aplicacion.Reclamos;
 using SGR.Dominio.Actuaciones;
-
+using SGR.Dominio.Usuarios;
 public class ModificarActuacionUseCase{
     private IActuacionRepository _actuacionRepo;
     private IReclamoRepository _reclamoRepo; 
