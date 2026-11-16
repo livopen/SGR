@@ -18,6 +18,8 @@ public class Reclamo
         Asunto = asunto ?? throw new DominioException("El asunto no puede ser nulo");
         FechaCreacion = DateTime.UtcNow;
         FechaUltimaModificacion = FechaCreacion;
+        if (usuarioUltimoCambio == Guid.Empty)
+            throw new DominioException("El usuario que realiza el cambio no puede ser nulo");
         UsuarioUltimoCambio = usuarioUltimoCambio;
         Estado = EstadoReclamo.Recibido;
     }
@@ -25,13 +27,17 @@ public class Reclamo
     private Reclamo(Guid id, Asunto asunto, DateTime fechaCreacion, DateTime fechaUltimaModificacion, Guid usuarioUltimoCambio, EstadoReclamo estado)
     {
         if (fechaUltimaModificacion < fechaCreacion)
-
             throw new DominioException("La fecha de última modificación no puede ser anterior a la fecha de creación");
+
+        if (id == Guid.Empty)
+            throw new DominioException("El Id no puede ser nulo");
 
         Id = id;
         Asunto = asunto ?? throw new DominioException("El asunto no puede ser nulo");
         FechaCreacion = fechaCreacion;
         FechaUltimaModificacion = fechaUltimaModificacion;
+        if (usuarioUltimoCambio == Guid.Empty)
+            throw new DominioException("El usuario que realiza el cambio no puede ser nulo");
         UsuarioUltimoCambio = usuarioUltimoCambio;
         Estado = estado;
     } // Constructor privado para EF Core
@@ -42,8 +48,12 @@ public class Reclamo
     
     public void ModificarAsunto(Asunto nuevoAsunto, Guid usuarioUltimoCambio)
     {
+        if(usuarioUltimoCambio == Guid.Empty)
+            throw new DominioException("El usuario que realiza el cambio no puede ser nulo");
         if (nuevoAsunto == null)
             throw new DominioException("El nuevo asunto no puede ser nulo");
+        if (usuarioUltimoCambio == Guid.Empty)
+            throw new DominioException("El usuario que realiza el cambio no puede ser nulo");
         Asunto = nuevoAsunto;
         FechaUltimaModificacion = DateTime.UtcNow;
         UsuarioUltimoCambio = usuarioUltimoCambio;
@@ -53,10 +63,14 @@ public class Reclamo
     {
         Estado = nuevoEstado;
         FechaUltimaModificacion = DateTime.UtcNow;
+        if(usuarioUltimoCambio == Guid.Empty)
+            throw new DominioException("El usuario que realiza el cambio no puede ser nulo");
         UsuarioUltimoCambio = usuarioUltimoCambio;
     }
   public bool ActualizarEstado(TipoActuacion? ultimoTipo, Guid idUsuario)
 {
+    if (idUsuario == Guid.Empty)
+      throw new DominioException("El usuario que realiza el cambio no puede ser nulo");
     EstadoReclamo nuevoEstadoEsperado;
     if (ultimoTipo == null)
     {

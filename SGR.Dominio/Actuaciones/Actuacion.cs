@@ -40,6 +40,12 @@ public class Actuacion
     }
     private Actuacion(Guid id, Guid reclamoId, TipoActuacion tipo, DetalleActuacion detalle, DateTime fechaCreacion, DateTime fechaUltimaModificacion, Guid usuarioUltimoCambio)
     {
+        if (id == Guid.Empty)
+            throw new DominioException("El Id de la actuación es obligatorio.");
+        if (reclamoId == Guid.Empty)
+            throw new DominioException("El Id del reclamo es obligatorio.");
+        if (usuarioUltimoCambio == Guid.Empty)
+            throw new DominioException("El Id del usuario es obligatorio.");
         if (fechaUltimaModificacion < fechaCreacion)
             throw new DominioException("La fecha de última modificación no puede ser anterior a la fecha de creación");
         Id = id;
