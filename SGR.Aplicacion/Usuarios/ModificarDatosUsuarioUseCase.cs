@@ -1,4 +1,5 @@
 using SGR.Dominio.Comun;
+using SGR.Aplicacion.GestorDeContraseñas;
 namespace SGR.Aplicacion.Usuarios;
 public class ModificarDatosUsuarioUseCase
 {

@@ -1,6 +1,7 @@
 namespace SGR.Aplicacion.Reclamos;
 using SGR.Dominio.Reclamos;
 using SGR.Aplicacion.Comun;
+using SGR.Dominio.Usuarios;
 using SGR.Aplicacion.Autorizacion;
 public class CambiarEstadoReclamoUseCase
 {

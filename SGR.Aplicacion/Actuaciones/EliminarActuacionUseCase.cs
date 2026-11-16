@@ -2,7 +2,7 @@ namespace SGR.Aplicacion.Actuaciones;
 using SGR.Aplicacion.Autorizacion;
 using SGR.Aplicacion.Comun;
 using SGR.Aplicacion.Reclamos;
-
+using SGR.Dominio.Usuarios;
 public class EliminarActuacionUseCase
 {
     private IActuacionRepository _actuacionRepo;
