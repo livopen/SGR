@@ -50,4 +50,44 @@ public class Usuario
     {
         return _permisos.Contains(permiso);
     }
+
+    
+    public void ReemplazarPermisos(List<Permiso> nuevosPermisos)
+    {
+        _permisos.Clear(); // Limpiamos sobre la lista privada 
+        if (nuevosPermisos != null) 
+        {
+            foreach (var permiso in nuevosPermisos) 
+            {
+                if (!_permisos.Contains(permiso)) 
+                {
+                    _permisos.Add(permiso); 
+                }
+            }
+        }
+    }
+
+    public void ActualizarDatos(string nuevoNombre, string nuevoCorreo)
+    {
+        if (string.IsNullOrWhiteSpace(nuevoNombre))
+            throw new DominioException("El nombre no puede estar vacío.");
+        if (string.IsNullOrWhiteSpace(nuevoCorreo) || !nuevoCorreo.Contains("@"))
+            throw new DominioException("El formato del correo electrónico no es válido.");
+
+        _nombre = nuevoNombre;
+        _correoElectronico = new CorreoElectronico(nuevoCorreo);
+    }
+
+    public void Cambiarcontrasenia(string nuevacontraseniaHash)
+    {
+        if (string.IsNullOrWhiteSpace(nuevacontraseniaHash))
+            throw new DominioException("La contrasenia hash no puede estar vacía.");
+        
+        _contrasenaHash = nuevacontraseniaHash;
+    }
+
+    public bool EsAdministrador()
+    {
+        return _esAdministrador;
+    }
 }

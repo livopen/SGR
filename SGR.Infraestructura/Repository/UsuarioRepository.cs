@@ -1,6 +1,6 @@
 using SGR.Aplicacion.Usuarios;
 using SGR.Dominio.Usuarios;
-namespace SGR.Infraestructura;
+namespace SGR.Infraestructura.Repository;
 public class UsuarioRepository : IUsuarioRepository
 {
     private readonly SgrContext _context;
