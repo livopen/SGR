@@ -15,9 +15,9 @@ public class Actuacion
     public Actuacion(Guid reclamoId, TipoActuacion tipo, DetalleActuacion detalle, Guid usuarioUltimoCambio)
     {
         if (reclamoId == Guid.Empty)
-        throw new DominioException("El Id del reclamo es obligatorio.");
+            throw new DominioException("El Id del reclamo es obligatorio.");
         if (usuarioUltimoCambio == Guid.Empty)
-        throw new DominioException("El Id del usuario es obligatorio.");
+            throw new DominioException("El Id del usuario es obligatorio.");
         Id = Guid.NewGuid();
         ReclamoId = reclamoId;
         Tipo = tipo;
@@ -30,7 +30,8 @@ public class Actuacion
     {
         if (nuevoDetalle == null)
             throw new DominioException("El detalle de la actuación no puede ser nulo");
-
+        if(idUsuario == Guid.Empty)
+            throw new DominioException("El id usuario no puede estar vacio");
         Tipo = nuevoTipo;
         Detalle = nuevoDetalle;
         
@@ -40,12 +41,6 @@ public class Actuacion
     }
     private Actuacion(Guid id, Guid reclamoId, TipoActuacion tipo, DetalleActuacion detalle, DateTime fechaCreacion, DateTime fechaUltimaModificacion, Guid usuarioUltimoCambio)
     {
-        if (id == Guid.Empty)
-            throw new DominioException("El Id de la actuación es obligatorio.");
-        if (reclamoId == Guid.Empty)
-            throw new DominioException("El Id del reclamo es obligatorio.");
-        if (usuarioUltimoCambio == Guid.Empty)
-            throw new DominioException("El Id del usuario es obligatorio.");
         if (fechaUltimaModificacion < fechaCreacion)
             throw new DominioException("La fecha de última modificación no puede ser anterior a la fecha de creación");
         Id = id;

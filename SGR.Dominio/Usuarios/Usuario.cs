@@ -27,7 +27,7 @@ public class Usuario
         _id = Guid.NewGuid();
         _nombre = nombre.Trim();
         _correoElectronico = correoElectronico ?? throw new DominioException("El correo electrónico no puede ser nulo.");
-        _contrasenaHash = contrasenaHash;
+        _contrasenaHash = contrasenaHash  ?? throw new DominioException("El correo electrónico no puede ser nulo.");;
         _esAdministrador = esAdministrador;
     }
 
