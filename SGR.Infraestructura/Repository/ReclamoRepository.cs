@@ -2,7 +2,7 @@ using SGR.Aplicacion.Reclamos;
 using SGR.Dominio.Reclamos;
 using SGR.Dominio.Comun;
 
-namespace SGR.Infraestructura;
+namespace SGR.Infraestructura.Repository;
 public class ReclamoRepository : IReclamoRepository
 {
     private readonly SgrContext _context;

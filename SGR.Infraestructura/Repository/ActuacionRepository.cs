@@ -1,7 +1,7 @@
 using SGR.Aplicacion.Actuaciones;
 using SGR.Dominio.Actuaciones;
 
-namespace SGR.Infraestructura;
+namespace SGR.Infraestructura.Repository;
 public class ActuacionRepository : IActuacionRepository
 {
     private readonly SgrContext _context;
