@@ -1,5 +1,7 @@
 using SGR.Dominio.Comun;
 using SGR.Dominio.Usuarios;
+using SGR.Aplicacion.GestorDeContraseñas;
+
 namespace SGR.Aplicacion.Usuarios;
 
 public class RegistrarUsuarioUseCase

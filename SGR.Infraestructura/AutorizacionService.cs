@@ -21,7 +21,7 @@ public class AutorizacionService : IAutorizacionService
         if (usuario.EsAdministrador()) return true;
         if (usuario.tienePermiso(permisoRequerido))
         {
-            return false; 
+            return true; 
         }
 
         if (permisoRequerido == Permiso.ActuacionBaja && usuario.tienePermiso(Permiso.ReclamoBaja))

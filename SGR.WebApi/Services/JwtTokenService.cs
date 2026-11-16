@@ -2,11 +2,12 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
-using SGR.Dominio.Entidades; // Ajustá este namespace según la ubicación de Usuario en tu proyecto
+using SGR.Aplicacion.Token;
+using SGR.Dominio.Usuarios;
 
 namespace SGR.WebApi.Services;
 
-public class JwtTokenService
+public class JwtTokenService : ITokenService
 {
     private readonly IConfiguration _configuration;
 
@@ -26,9 +27,10 @@ public class JwtTokenService
         // Claims estándares con los datos del usuario autenticado
         var claims = new List<Claim>
         {
-            new(ClaimTypes.NameIdentifier, usuario.Id.ToString()),
-            new(ClaimTypes.Email, usuario.CorreoElectronico.ToString()),
-            new(ClaimTypes.Role, usuario.Rol.ToString())
+            new(ClaimTypes.NameIdentifier, usuario._id.ToString()),
+            new(ClaimTypes.Name, usuario._nombre ?? throw new InvalidOperationException("El usuario no tiene un nombre configurado.")),
+            new(ClaimTypes.Email, usuario._correoElectronico?.Valor ?? throw new InvalidOperationException("El usuario no tiene un correo electrónico configurado.")),
+            new(ClaimTypes.Role, usuario._esAdministrador ? "Administrador" : "Usuario")
         };
 
         var tokenDescriptor = new SecurityTokenDescriptor
