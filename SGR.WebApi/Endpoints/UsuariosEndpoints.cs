@@ -1,5 +1,7 @@
 using System.Security.Claims;
+using SGR.Aplicacion;
 using SGR.Aplicacion.Usuarios;
+using SGR.Dominio.Usuarios;
 
 namespace SGR.WebApi.Endpoints;
 
@@ -11,32 +13,51 @@ public static class UsuariosEndpoints
             .WithTags("Usuarios")
             .RequireAuthorization();
 
-        group.MapPut("/yo", (ClaimsPrincipal user, ModificarMisDatosRequest request, ModificarMisDatosUseCase useCase) =>
+        // PUT /usuarios/yo (Modifica los datos propios extrayendo el ID del token JWT)
+        group.MapPut("/yo", (ModificarMisDatosHttpBody body, ClaimsPrincipal user, ModificarDatosUsuarioUseCase useCase) =>
         {
             var userId = Guid.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier)!);
-            useCase.Ejecutar(request, userId);
+            var request = new ModificarDatosUsuarioRequest(
+                UserIdDesdeToken: userId,
+                UserIdAModificar: userId,
+                NuevoNombre: body.NuevoNombre,
+                NuevoCorreo: body.NuevoCorreo,
+                NuevacontraseniaPura: body.NuevaContrasenia ?? string.Empty
+            );
+            useCase.Ejecutar(request);
             return Results.NoContent();
         });
 
+        // GET /usuarios (Listado exclusivo para Administrador)
         group.MapGet("/", (ClaimsPrincipal user, ListarUsuariosUseCase useCase) =>
         {
             var userId = Guid.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier)!);
-            var response = useCase.Ejecutar(userId);
+            var response = useCase.Ejecutar(new ListarUsuariosRequest(userId));
             return Results.Ok(response);
         });
 
+        // DELETE /usuarios/{id} (Eliminación exclusiva por Administrador)
         group.MapDelete("/{id:guid}", (Guid id, ClaimsPrincipal user, EliminarUsuarioUseCase useCase) =>
         {
             var userId = Guid.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier)!);
-            useCase.Ejecutar(id, userId);
+            useCase.Ejecutar(new EliminarUsuarioRequest(OperadorId: userId, UsuarioAEliminar: id));
             return Results.NoContent();
         });
 
-        group.MapPut("/{id:guid}/permisos", (Guid id, ModificarPermisosUsuarioRequest request, ClaimsPrincipal user, ModificarPermisosUsuarioUseCase useCase) =>
+        // PUT /usuarios/{id}/permisos (Modificación de permisos por Administrador)
+        group.MapPut("/{id:guid}/permisos", (Guid id, ModificarPermisosHttpBody body, ClaimsPrincipal user, ModificarPermisosUsuarioUseCase useCase) =>
         {
             var userId = Guid.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier)!);
-            useCase.Ejecutar(id, request, userId);
-            return Results.NoContent();
+            var request = new ModificarPermisosRequest(
+                UsuarioId: id,
+                NuevosPermisos: body.NuevosPermisos,
+                IdUsuarioOperador: userId
+            );
+            var response = useCase.Ejecutar(request);
+            return Results.Ok(response);
         });
     }
 }
+
+public record ModificarMisDatosHttpBody(string NuevoNombre, string NuevoCorreo, string? NuevaContrasenia);
+public record ModificarPermisosHttpBody(List<Permiso> NuevosPermisos);
