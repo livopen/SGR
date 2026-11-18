@@ -1,41 +1,63 @@
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using Scalar.AspNetCore;
+using SGR.Aplicacion;
+using SGR.Aplicacion.Token;
+using SGR.Infraestructura;
+using SGR.WebApi.Endpoints;
+using SGR.WebApi.Middlewares;
+using SGR.WebApi.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+// 1. Inyección de OpenAPI, ProblemDetails y Manejador Global de Excepciones
 builder.Services.AddOpenApi();
+builder.Services.AddProblemDetails();
+builder.Services.AddExceptionHandler<ManejadorDeExcepcionesGlobales>();
+
+builder.Services.AddScoped<ITokenService, JwtTokenService>();
+
+// 2. Registro Modular de Aplicación e Infraestructura
+builder.Services.AddAplicacion();
+builder.Services.AddInfraestructura(builder.Configuration);
+
+// 3. Configuración de Autenticación JWT y Autorización
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
+        };
+    });
+builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// 4. Pipeline de Middlewares (Orden obligatorio de la cátedra: ExceptionHandler -> AuthN -> AuthZ)
+app.UseExceptionHandler();
+app.UseAuthentication();
+app.UseAuthorization();
+
+// 5. Scalar e Interfaz de Documentación en Desarrollo
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.MapScalarApiReference();
 }
 
-app.UseHttpsRedirection();
-
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast");
+// 6. Registro de Endpoints Descentralizados
+app.MapAuthEndpoints();
+app.MapUsuariosEndpoints();
+app.MapReclamosEndpoints();
+app.MapActuacionesEndpoints();
 
 app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
