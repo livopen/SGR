@@ -155,6 +155,7 @@ app.UseAuthorization();
 // Endpoints
 app.MapGet("/", () => "¡La API está funcionando!");
 app.MapUsuariosEndpoints();
+app.MapAuthEndpoints();
 app.MapReclamosEndpoints();
 app.MapActuacionesEndpoints();
 app.MapControllers();
