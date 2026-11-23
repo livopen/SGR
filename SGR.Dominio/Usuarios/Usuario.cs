@@ -30,7 +30,18 @@ public class Usuario
         _contrasenaHash = contrasenaHash  ?? throw new DominioException("El correo electrónico no puede ser nulo.");;
         _esAdministrador = esAdministrador;
     }
+    public static Usuario UsuarioFactoryMethod(Guid id, string nombre, CorreoElectronico correo, string contraseniaHash,bool esAdministrador)
+    {
+        var usuario = new Usuario();
+        
+        usuario._id = id;
+        usuario._nombre = nombre;
+        usuario._correoElectronico = correo;
+        usuario._contrasenaHash = contraseniaHash;
+        usuario._esAdministrador = esAdministrador;
 
+        return usuario;
+    }
     public void AsignarPermiso(Permiso permiso)
     {
         if (!Enum.IsDefined(typeof(Permiso), permiso))
