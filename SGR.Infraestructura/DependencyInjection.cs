@@ -16,9 +16,8 @@ public static class DependencyInjection
     public static IServiceCollection AddInfraestructura(this IServiceCollection services, IConfiguration configuration)
     {
       
-        var connectionString = configuration.GetConnectionString("SGEDb");
-        services.AddDbContext<SgrContext>(opciones => opciones.UseSqlite(configuration.GetConnectionString("DefaultConnection") 
-        ?? "Server=localhost\\SQLEXPRESS;Database=SGE_DB;Trusted_Connection=True;TrustServerCertificate=True;MultipleActiveResultSets=true"));
+        var connectionString = configuration.GetConnectionString("SgrDb") ?? "Data Source=SGR.sqlite";
+        services.AddDbContext<SgrContext>(opciones => opciones.UseSqlite(connectionString));
         
         services.AddScoped<IUnidadDeTrabajo, UnidadDeTrabajo>();
         services.AddScoped<IReclamoRepository, ReclamoRepository>();

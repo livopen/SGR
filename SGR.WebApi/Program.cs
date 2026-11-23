@@ -2,6 +2,7 @@ using SGR.Infraestructura;
 using SGR.Aplicacion;
 using Scalar.AspNetCore;
 using SGR.WebApi.Endpoints;
+using SGR.WebApi;
 using SGR.WebApi.Middlewares;
 using SGR.Aplicacion.Token;
 using SGR.Aplicacion.Usuarios;
@@ -153,9 +154,9 @@ app.UseAuthorization();
 
 // Endpoints
 app.MapGet("/", () => "¡La API está funcionando!");
-app.UsuariosEndPoints();
-app.ReclamosEndPoints();
-app.ActuacionesEndPoints();
+app.MapUsuariosEndpoints();
+app.MapReclamosEndpoints();
+app.MapActuacionesEndpoints();
 app.MapControllers();
 
 app.Run();
