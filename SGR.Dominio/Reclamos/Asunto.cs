@@ -4,7 +4,13 @@ namespace SGR.Dominio.Reclamos;
 
 public record class Asunto
 {
-    public string Descripcion {get; }
+    public string Descripcion {get; private set; }
+
+    private Asunto()
+    {
+        Descripcion = string.Empty;
+    }
+
     public Asunto(string descripcion)
     {
         if (string.IsNullOrWhiteSpace(descripcion)|| descripcion.Length > 200)

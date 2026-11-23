@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using SGR.Dominio.Actuaciones;
 using SGR.Dominio.Reclamos;
 using SGR.Dominio.Usuarios;
@@ -19,7 +20,7 @@ public class SgrContext : DbContext
     {
         if (!optionsBuilder.IsConfigured)
         {
-            optionsBuilder.UseSqlite("Server=localhost\\SQLEXPRESS;Database=SGE_DB;Trusted_Connection=True;TrustServerCertificate=True;MultipleActiveResultSets=true");
+            optionsBuilder.UseSqlite("Data Source=SGR.sqlite");
         }
     }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -31,7 +32,7 @@ public class SgrContext : DbContext
         {
             entity.HasKey(e => e.Id);
             
-            entity.ComplexProperty(e => e.Estado);
+            entity.Property(e => e.Estado);
 
             entity.ComplexProperty(e => e.Asunto); 
         });
@@ -41,7 +42,8 @@ public class SgrContext : DbContext
             
             entity.HasKey(t => t.Id);
         
-            entity.ComplexProperty(t => t.Tipo);
+            entity.Property(t => t.Tipo);
+            entity.ComplexProperty(t => t.Detalle);
         });
 
         // Mapeo de Usuario
@@ -58,15 +60,17 @@ public class SgrContext : DbContext
             entity.Property(u => u._contrasenaHash).IsRequired();
         
         //mapeo de lista de permisos
-        entity.Property<List<Permiso>>("_permisos")
+        entity.Property<HashSet<Permiso>>("_permisos")
                 .HasColumnName("Permisos")
                 .HasConversion(
                     lista => JsonSerializer.Serialize(lista, (JsonSerializerOptions?)null),
-                    json => JsonSerializer.Deserialize<List<Permiso>>(json, (JsonSerializerOptions?)null) ?? new List<Permiso>()
-                );
-        // Le indicamos a EF Core que la propiedad de solo lectura 'Permisos' usa el campo '_permisos'
-        entity.Metadata.FindProperty(nameof(Usuario.Permisos))
-                ?.SetPropertyAccessMode(PropertyAccessMode.Field);
+                    json => JsonSerializer.Deserialize<HashSet<Permiso>>(json, (JsonSerializerOptions?)null) ?? new HashSet<Permiso>()
+                )
+                .Metadata.SetValueComparer(new ValueComparer<HashSet<Permiso>>(
+                    (actual, snapshot) => actual != null && snapshot != null && actual.SetEquals(snapshot),
+                    permisos => permisos == null ? 0 : permisos.Aggregate(0, (hash, permiso) => hash ^ permiso.GetHashCode()),
+                    permisos => permisos == null ? new HashSet<Permiso>() : new HashSet<Permiso>(permisos)
+                ));
         });
 
     }

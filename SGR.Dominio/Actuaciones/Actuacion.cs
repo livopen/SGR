@@ -12,6 +12,11 @@ public class Actuacion
     public DateTime FechaUltimaModificacion { get; private set; }
     public Guid UsuarioUltimoCambio { get; private set; }
 
+    private Actuacion()
+    {
+        Detalle = null!;
+    }
+
     public Actuacion(Guid reclamoId, TipoActuacion tipo, DetalleActuacion detalle, Guid usuarioUltimoCambio)
     {
         if (reclamoId == Guid.Empty)

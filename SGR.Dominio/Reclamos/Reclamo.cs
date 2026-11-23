@@ -12,6 +12,11 @@ public class Reclamo
     public Guid UsuarioUltimoCambio { get; private set; }
     public EstadoReclamo Estado { get; private set; }
 
+    private Reclamo()
+    {
+        Asunto = null!;
+    }
+
     public Reclamo(Asunto asunto, Guid usuarioUltimoCambio)
     {
         Id = Guid.NewGuid();
