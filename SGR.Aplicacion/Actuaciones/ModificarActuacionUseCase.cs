@@ -11,13 +11,15 @@ public class ModificarActuacionUseCase{
     private IReclamoRepository _reclamoRepo; 
     private ActualizacionEstadoReclamoService _estadoService;
     private IAutorizacionService _autorizacion;
+    private IUnidadDeTrabajo _unidadDeTrabajo;
     public ModificarActuacionUseCase(IActuacionRepository actuacionRepository, IReclamoRepository reclamoRepository, ActualizacionEstadoReclamoService estadoService,
-        IAutorizacionService autorizacionService)
+        IAutorizacionService autorizacionService,IUnidadDeTrabajo unidadDeTrabajo)
     {
         _actuacionRepo = actuacionRepository;
         _reclamoRepo = reclamoRepository;
         _estadoService = estadoService;
         _autorizacion = autorizacionService;
+        _unidadDeTrabajo = unidadDeTrabajo;
 
     }
     public ModificarActuacionResponse Ejecutar(ModificarActuacionRequest request)
@@ -47,7 +49,12 @@ public class ModificarActuacionUseCase{
         
         _estadoService.Ejecutar(reclamo,idUsuario);
         
-        return new ModificarActuacionResponse(actuacion.Id.ToString(),actuacion.Detalle.Descripcion,actuacion.Tipo.ToString());
+        _unidadDeTrabajo.Guardar();
+        
+        return new ModificarActuacionResponse(
+            actuacion.Id.ToString(),
+            actuacion.Detalle.Descripcion,
+            actuacion.Tipo.ToString());
     }
 
 

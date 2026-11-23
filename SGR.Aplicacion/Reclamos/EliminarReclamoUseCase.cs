@@ -9,12 +9,14 @@ public class EliminarReclamoUseCase
     private readonly IReclamoRepository _reclamoRepo;
     private readonly IAutorizacionService _servicioAutorizacion;
     private readonly IActuacionRepository _actuacionRepo;
+    private readonly IUnidadDeTrabajo _unidadDeTrabajo;
 
-    public EliminarReclamoUseCase(IReclamoRepository reclamoRepository, IActuacionRepository actuacionRepository, IAutorizacionService autorizacionService)
+    public EliminarReclamoUseCase(IReclamoRepository reclamoRepository, IActuacionRepository actuacionRepository, IAutorizacionService autorizacionService, IUnidadDeTrabajo unidadDeTrabajo)
     {
         _reclamoRepo = reclamoRepository;
         _actuacionRepo = actuacionRepository;
         _servicioAutorizacion = autorizacionService;
+        _unidadDeTrabajo = unidadDeTrabajo;
     }
     public EliminarReclamoResponse Ejecutar(EliminarReclamoRequest request)
     {
@@ -38,6 +40,7 @@ public class EliminarReclamoUseCase
         }
         // 4 Elimino el reclamo
         _reclamoRepo.Eliminar(Guid.Parse(request.IdReclamo));
+        _unidadDeTrabajo.Guardar();
 
         // 5. Retorno del DTO Response
         return new EliminarReclamoResponse(Exito: true, IdReclamoEliminado: request.IdReclamo);

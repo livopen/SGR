@@ -9,13 +9,15 @@ public class EliminarActuacionUseCase
     private IAutorizacionService _autorizacion;
     private IReclamoRepository _reclamoRepo;
     private ActualizacionEstadoReclamoService _servicioDeCambioDeEstado;
+    private IUnidadDeTrabajo _unidadDeTrabajo;
     public EliminarActuacionUseCase(IActuacionRepository actuacionRepo, IReclamoRepository reclamoRepo, IAutorizacionService servicioAutorizacion,
-        ActualizacionEstadoReclamoService servicioDeCambioDeEstado)
+        ActualizacionEstadoReclamoService servicioDeCambioDeEstado, IUnidadDeTrabajo unidadDeTrabajo)
     {
         _actuacionRepo = actuacionRepo;
         _reclamoRepo = reclamoRepo;
         _autorizacion = servicioAutorizacion;
         _servicioDeCambioDeEstado = servicioDeCambioDeEstado;
+        _unidadDeTrabajo = unidadDeTrabajo;
     }
     public EliminarActuacionResponse Ejecutar(EliminarActuacionRequest request)
     {
@@ -38,6 +40,8 @@ public class EliminarActuacionUseCase
         
         // Recalcular el estado del reclamo
         _servicioDeCambioDeEstado.Ejecutar(reclamo,Guid.Parse(request.UsuarioId));
+
+        _unidadDeTrabajo.Guardar();
   
         return new EliminarActuacionResponse(true,idActuacion.ToString());
     }

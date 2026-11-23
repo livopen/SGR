@@ -16,6 +16,9 @@ public class ModificarDatosUsuarioUseCase
 
     public void Ejecutar(ModificarDatosUsuarioRequest request)
     {
+        if (request == null)
+            throw new ArgumentNullException(nameof(request));
+            
         if (request.UserIdDesdeToken != request.UserIdAModificar)
             throw new DominioException("No posee autorización para modificar los datos de otro usuario.");
 

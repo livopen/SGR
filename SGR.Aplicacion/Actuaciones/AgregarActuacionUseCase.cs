@@ -10,14 +10,16 @@ public class AgregarActuacionUseCase
     private readonly IAutorizacionService _ServicioAutorizacion;
     private readonly IReclamoRepository _reclamoRepo;
     private readonly ActualizacionEstadoReclamoService _servicioDeCambioDeEstado;
+     private readonly IUnidadDeTrabajo _unidadDeTrabajo;
 
     public AgregarActuacionUseCase(IActuacionRepository actuacionRepo, IReclamoRepository reclamoRepo, IAutorizacionService servicioAutorizacion, 
-        ActualizacionEstadoReclamoService servicionDeCambioDeEstado)
+        ActualizacionEstadoReclamoService servicionDeCambioDeEstado, IUnidadDeTrabajo unidadDeTrabajo)
     {
         _actuacionRepo = actuacionRepo;
         _reclamoRepo = reclamoRepo;
         _ServicioAutorizacion = servicioAutorizacion;
         _servicioDeCambioDeEstado = servicionDeCambioDeEstado;
+        _unidadDeTrabajo = unidadDeTrabajo;
     }
     
     public AgregarActuacionResponse Ejecutar(AgregarActuacionRequest request)
@@ -47,6 +49,8 @@ public class AgregarActuacionUseCase
 
        //llamo al servicio de actualizacion de estado
        _servicioDeCambioDeEstado.Ejecutar(reclamo,idUsuario); 
+
+       _unidadDeTrabajo.Guardar();
        
        return new AgregarActuacionResponse(nuevaActuacion.Id.ToString(),nuevaActuacion.Detalle.Descripcion);
     }

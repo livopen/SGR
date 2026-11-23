@@ -8,11 +8,13 @@ public class ModificarAsuntoReclamoUseCase
 {
     private readonly IReclamoRepository _reclamoRepo;
     private readonly IAutorizacionService _autorizacionService;
+    private readonly IUnidadDeTrabajo _unidadDeTrabajo;
 
-    public ModificarAsuntoReclamoUseCase(IReclamoRepository reclamoRepository, IAutorizacionService autorizacionService)
+    public ModificarAsuntoReclamoUseCase(IReclamoRepository reclamoRepository, IAutorizacionService autorizacionService, IUnidadDeTrabajo unidadDeTrabajo)
     {
         _reclamoRepo = reclamoRepository;
         _autorizacionService = autorizacionService;
+        _unidadDeTrabajo = unidadDeTrabajo;
     }
     public ModificarAsuntoReclamoResponse Ejecutar(ModificarAsuntoReclamoRequest request)
     {
@@ -30,6 +32,7 @@ public class ModificarAsuntoReclamoUseCase
         reclamo.ModificarAsunto(nuevoAsunto,Guid.Parse(request.UsuarioId));
         // 5. Persistir los cambios
         _reclamoRepo.Modificar(reclamo); 
+        _unidadDeTrabajo.Guardar();
         // 6. Retornar la respuesta 
         return new ModificarAsuntoReclamoResponse(reclamo.Id.ToString(),reclamo.Asunto.Descripcion.ToString());
     }

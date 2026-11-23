@@ -6,11 +6,13 @@ public class AgregarReclamoUseCase
 {
     private readonly IReclamoRepository _repositorio;
     private readonly IAutorizacionService _ServicioAutorizacion;
+    private readonly IUnidadDeTrabajo _unidadDeTrabajo;
 
-    public AgregarReclamoUseCase(IReclamoRepository repositorio, IAutorizacionService servicioAutorizacion)
+    public AgregarReclamoUseCase(IReclamoRepository repositorio, IAutorizacionService servicioAutorizacion, IUnidadDeTrabajo unidadDeTrabajo)
     {
         _repositorio = repositorio;
         _ServicioAutorizacion = servicioAutorizacion;
+        _unidadDeTrabajo = unidadDeTrabajo;
     }
     
     public AgregarReclamoResponse Ejecutar(AgregarReclamoRequest request)
@@ -25,6 +27,7 @@ public class AgregarReclamoUseCase
 
         // 3. El repositorio local "registra" el Reclamo 
         _repositorio.Agregar(reclamoNuevo);
+        _unidadDeTrabajo.Guardar();
         
         // 4. Retornamos la respuesta
         return new AgregarReclamoResponse(reclamoNuevo.Id.ToString(), reclamoNuevo.Asunto.Descripcion , DateTime.Now);

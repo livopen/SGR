@@ -36,6 +36,13 @@ public class RegistrarUsuarioUseCase
         }
 
 
+        ///Este if evita registrar usuarios con contraseñas vacias
+        if (string.IsNullOrWhiteSpace(request.contrasenia))
+        {
+            throw new ArgumentException("La contraseña es obligatoria.");
+        }
+
+
         string hashcontrasenia = _passwordHasher.HashPassword(request.contrasenia);
 
         var correo = new CorreoElectronico(correoNormalizado);

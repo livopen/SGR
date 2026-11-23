@@ -21,7 +21,7 @@ public class ObtenerReclamoPorIdUseCase
         throw new EntidadNoEncontradaException($"El reclamo con ID {request.IdReclamo} no existe.");
         }
 
-        IEnumerable<Actuacion> listaActuaciones = _actuacionRepo.ObtenerActuacionesIdReclamo(Guid.Parse(request.IdReclamo));
+        IEnumerable<Actuacion> listaActuaciones = _actuacionRepo.ObtenerActuacionesIdReclamo(Guid.Parse(request.IdReclamo)).OrderBy(a => a.FechaCreacion);
         // Mapear la lista de actuaciones de 'actuacion' a 'actuacionDTO'
         var listaActuacionesDTO = listaActuaciones.Select(t => new ActuacionDTO(
             t.Id.ToString(), 

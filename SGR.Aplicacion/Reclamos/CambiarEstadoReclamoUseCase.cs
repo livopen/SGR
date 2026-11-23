@@ -7,10 +7,12 @@ public class CambiarEstadoReclamoUseCase
 {
     private readonly IReclamoRepository _reclamoRepo;
     private readonly IAutorizacionService _servicioAutorizacion;
-    public CambiarEstadoReclamoUseCase(IReclamoRepository reclamoRepository, IAutorizacionService autorizacionService)
+    private readonly IUnidadDeTrabajo _unidadDeTrabajo;
+    public CambiarEstadoReclamoUseCase(IReclamoRepository reclamoRepository, IAutorizacionService autorizacionService, IUnidadDeTrabajo unidadDeTrabajo)
     {
         _reclamoRepo = reclamoRepository;
         _servicioAutorizacion = autorizacionService;
+        _unidadDeTrabajo = unidadDeTrabajo;
     }
     public CambiarEstadoReclamoResponse Ejecutar(CambiarEstadoReclamoRequest request)
     {
@@ -35,6 +37,7 @@ public class CambiarEstadoReclamoUseCase
 
         // 4. Persistir en la infraestructura
         _reclamoRepo.Modificar(reclamo);
+        _unidadDeTrabajo.Guardar();
 
         // 5. Retornamos la respuesta
         return new CambiarEstadoReclamoResponse(estadoNuevoValido.ToString());

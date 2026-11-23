@@ -14,6 +14,9 @@ public class EliminarUsuarioUseCase
 
     public void Ejecutar(EliminarUsuarioRequest request)
     {
+        if (request == null)
+            throw new ArgumentNullException(nameof(request));
+
         var operador = _repositorio.ObtenerPorId(request.OperadorId);
         if (operador == null || !operador._esAdministrador)
             throw new AutorizacionException("Acción denegada: Se requieren privilegios de administrador.");
