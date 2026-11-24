@@ -14,13 +14,15 @@ public static class AuthEndpoints
             var request = new RegistrarUsuarioRequest(body.Nombre, body.CorreoElectronico, body.Contrasenia, false);
             var response = useCase.Ejecutar(request);
             return Results.Created($"/usuarios/{response.Id}", response);
-        });
+        }).WithName("RegistrarCuenta")
+          .WithSummary("Crear una cuenta de usuario");
 
         group.MapPost("/login", (LoginRequest request, LoginUseCase useCase) =>
         {
             var response = useCase.Ejecutar(request);
             return Results.Ok(response);
-        });
+        }).WithName("IniciarSesion")
+          .WithSummary("Iniciar sesión y obtener un token de acceso");
     }
 }
 

@@ -26,7 +26,8 @@ public static class UsuariosEndpoints
             );
             useCase.Ejecutar(request);
             return Results.NoContent();
-        });
+        }).WithName("ModificarMisDatos")
+          .WithSummary("Actualizar los datos de mi cuenta");
 
         // GET /usuarios (Listado exclusivo para Administrador)
         group.MapGet("/", (ClaimsPrincipal user, ListarUsuariosUseCase useCase) =>
@@ -34,7 +35,8 @@ public static class UsuariosEndpoints
             var userId = Guid.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier)!);
             var response = useCase.Ejecutar(new ListarUsuariosRequest(userId));
             return Results.Ok(response);
-        });
+        }).WithName("ListarUsuarios")
+          .WithSummary("Consultar los usuarios del sistema");
 
         // DELETE /usuarios/{id} (Eliminación exclusiva por Administrador)
         group.MapDelete("/{id:guid}", (Guid id, ClaimsPrincipal user, EliminarUsuarioUseCase useCase) =>
@@ -42,7 +44,8 @@ public static class UsuariosEndpoints
             var userId = Guid.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier)!);
             useCase.Ejecutar(new EliminarUsuarioRequest(OperadorId: userId, UsuarioAEliminar: id));
             return Results.NoContent();
-        });
+        }).WithName("EliminarUsuario")
+          .WithSummary("Eliminar un usuario por su identificador");
 
         // PUT /usuarios/{id}/permisos (Modificación de permisos por Administrador)
         group.MapPut("/{id:guid}/permisos", (Guid id, ModificarPermisosHttpBody body, ClaimsPrincipal user, ModificarPermisosUsuarioUseCase useCase) =>
@@ -55,7 +58,8 @@ public static class UsuariosEndpoints
             );
             var response = useCase.Ejecutar(request);
             return Results.Ok(response);
-        });
+        }).WithName("ModificarPermisosUsuario")
+          .WithSummary("Actualizar los permisos de un usuario");
     }
 }
 
