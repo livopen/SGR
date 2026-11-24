@@ -22,14 +22,16 @@ public static class ReclamosEndpoints
                 resultado = resultado.Where(r => r.Estado.Equals(estado, StringComparison.OrdinalIgnoreCase));
             }
             return Results.Ok(resultado);
-        });
+        }).WithName("ListarReclamos")
+          .WithSummary("Consultar los reclamos, opcionalmente filtrados por estado");
 
         // GET /reclamos/{id}
         group.MapGet("/{id:guid}", (Guid id, ObtenerReclamoPorIdUseCase useCase) =>
         {
             var response = useCase.Ejecutar(new ObtenerReclamoPorIdRequest(id.ToString()));
             return Results.Ok(response);
-        });
+        }).WithName("ObtenerReclamoPorId")
+          .WithSummary("Consultar un reclamo por su identificador");
 
         // POST /reclamos
         group.MapPost("/", (AgregarReclamoHttpBody body, ClaimsPrincipal user, AgregarReclamoUseCase useCase) =>
@@ -38,7 +40,8 @@ public static class ReclamosEndpoints
             var request = new AgregarReclamoRequest(asunto: body.Asunto, IdUsuario: userId);
             var response = useCase.Ejecutar(request);
             return Results.Created($"/reclamos/{response.IdReclamo}", response);
-        });
+        }).WithName("CrearReclamo")
+          .WithSummary("Registrar un nuevo reclamo");
 
         // PUT /reclamos/{id}/asunto
         group.MapPut("/{id:guid}/asunto", (Guid id, ModificarAsuntoHttpBody body, ClaimsPrincipal user, ModificarAsuntoReclamoUseCase useCase) =>
@@ -47,7 +50,8 @@ public static class ReclamosEndpoints
             var request = new ModificarAsuntoReclamoRequest(descripcion: body.NuevoAsunto, UsuarioId: userId, ReclamoId: id.ToString());
             useCase.Ejecutar(request);
             return Results.NoContent();
-        });
+        }).WithName("ModificarAsuntoReclamo")
+          .WithSummary("Cambiar el asunto de un reclamo");
 
         // PUT /reclamos/{id}/estado
         group.MapPut("/{id:guid}/estado", (Guid id, CambiarEstadoHttpBody body, ClaimsPrincipal user, CambiarEstadoReclamoUseCase useCase) =>
@@ -56,7 +60,8 @@ public static class ReclamosEndpoints
             var request = new CambiarEstadoReclamoRequest(IdUsuario: userId, reclamoId: id.ToString(), NuevoEstado: body.NuevoEstado);
             useCase.Ejecutar(request);
             return Results.NoContent();
-        });
+        }).WithName("CambiarEstadoReclamo")
+          .WithSummary("Actualizar el estado de un reclamo");
 
         // DELETE /reclamos/{id}
         group.MapDelete("/{id:guid}", (Guid id, ClaimsPrincipal user, EliminarReclamoUseCase useCase) =>
@@ -65,14 +70,16 @@ public static class ReclamosEndpoints
             var request = new EliminarReclamoRequest(IdReclamo: id.ToString(), UsuarioId: userId);
             useCase.Ejecutar(request);
             return Results.NoContent();
-        });
+        }).WithName("EliminarReclamo")
+          .WithSummary("Eliminar un reclamo");
 
         // GET /reclamos/{id}/actuaciones
         group.MapGet("/{id:guid}/actuaciones", (Guid id, ObtenerActuacionesPorIdReclamoUseCase useCase) =>
         {
             var response = useCase.Ejecutar(new ObtenerActuacionesPorIdReclamoRequest(id.ToString()));
             return Results.Ok(response);
-        });
+        }).WithName("ListarActuacionesDeReclamo")
+          .WithSummary("Consultar las actuaciones de un reclamo");
 
         // POST /reclamos/{id}/actuaciones
         group.MapPost("/{id:guid}/actuaciones", (Guid id, AgregarActuacionHttpBody body, ClaimsPrincipal user, AgregarActuacionUseCase useCase) =>
@@ -81,7 +88,8 @@ public static class ReclamosEndpoints
             var request = new AgregarActuacionRequest(idReclamo: id.ToString(), tipo: body.Tipo, detalle: body.Detalle, IdUsuario: userId);
             var response = useCase.Ejecutar(request);
             return Results.Created($"/actuaciones/{response.IdReclamo}", response);
-        });
+        }).WithName("CrearActuacionDeReclamo")
+          .WithSummary("Agregar una actuación a un reclamo");
     }
 }
 
