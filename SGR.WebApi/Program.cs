@@ -54,12 +54,12 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         {
             OnAuthenticationFailed = context =>
             {
-                Console.WriteLine($"❌ ERROR JWT: {context.Exception.Message}");
+                Console.WriteLine($" ERROR JWT: {context.Exception.Message}");
                 return Task.CompletedTask;
             },
             OnChallenge = context =>
             {
-                Console.WriteLine($"⚠️ DESAFÍO JWT (401 enviado): {context.ErrorDescription}");
+                Console.WriteLine($" DESAFÍO JWT (401 enviado): {context.ErrorDescription}");
                 return Task.CompletedTask;
             }
         };
@@ -90,7 +90,7 @@ using (var scope = app.Services.CreateScope())
 
     context.Database.EnsureCreated();
 
-    var adminCorreo = new CorreoElectronico("admin@sge.com");
+    var adminCorreo = new CorreoElectronico("admin@sgr.com");
     if (usuarioRepository.ObtenerPorCorreo(adminCorreo) == null)
     {
         var nuevoAdmin = Usuario.UsuarioFactoryMethod(
@@ -103,7 +103,7 @@ using (var scope = app.Services.CreateScope())
         context.Usuarios.Add(nuevoAdmin);
     }
 
-    var op1Correo = new CorreoElectronico("operador1@sge.com");
+    var op1Correo = new CorreoElectronico("operador1@sgr.com");
     if (usuarioRepository.ObtenerPorCorreo(op1Correo) == null)
     {
         var nuevoOp1 = Usuario.UsuarioFactoryMethod(
@@ -116,7 +116,7 @@ using (var scope = app.Services.CreateScope())
         context.Usuarios.Add(nuevoOp1);
     }
 
-    var op2Correo = new CorreoElectronico("operador2@sge.com");
+    var op2Correo = new CorreoElectronico("operador2@sgr.com");
     if (usuarioRepository.ObtenerPorCorreo(op2Correo) == null)
     {
         var nuevoOp2 = Usuario.UsuarioFactoryMethod(

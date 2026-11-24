@@ -7,12 +7,25 @@ public static class ActuacionesEndpoints
 {
     public static void MapActuacionesEndpoints(this IEndpointRouteBuilder app)
     {
-        var group = app.MapGroup("/actuaciones")
+        var group = app.MapGroup("/")
             .WithTags("Actuaciones")
             .RequireAuthorization();
 
+        // POST /actuaciones
+        group.MapPost("/crearActuacion", (AgregarActuacionEnActuacionesHttpBody body, ClaimsPrincipal user, AgregarActuacionUseCase useCase) =>
+        {
+            var userId = user.FindFirstValue(ClaimTypes.NameIdentifier)!;
+            var request = new AgregarActuacionRequest(
+                idReclamo: body.IdReclamo,
+                tipo: body.Tipo,
+                detalle: body.Detalle,
+                IdUsuario: userId);
+            var response = useCase.Ejecutar(request);
+            return Results.Created($"/actuaciones/{response.IdReclamo}", response);
+        });
+
         // GET /actuaciones/{id}
-        group.MapGet("/{id:guid}", (Guid id, ClaimsPrincipal user, ObtenerActuacionPorIdUseCase useCase) =>
+        group.MapGet("obtenerActuacionPorId/{id:guid}", (Guid id, ClaimsPrincipal user, ObtenerActuacionPorIdUseCase useCase) =>
         {
             var userId = user.FindFirstValue(ClaimTypes.NameIdentifier)!;
             var response = useCase.Ejecutar(new ObtenerActuacionPorIdRequest(idActuacion: id.ToString(), idUsuario: userId));
@@ -39,4 +52,5 @@ public static class ActuacionesEndpoints
     }
 }
 
+public record AgregarActuacionEnActuacionesHttpBody(string IdReclamo, string Tipo, string Detalle);
 public record ModificarActuacionHttpBody(string Tipo, string Detalle);
