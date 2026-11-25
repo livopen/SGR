@@ -21,21 +21,33 @@ public class Usuario
     {
         if (string.IsNullOrWhiteSpace(nombre))
             throw new DominioException("El nombre del usuario no puede estar vacío.");
-        
+
+        _correoElectronico = correoElectronico ?? throw new DominioException("El correo electrónico no puede ser nulo.");
+        if (contrasenaHash is null)
+            throw new DominioException("La contraseña no puede ser nula.");
         if(string.IsNullOrWhiteSpace(contrasenaHash))
             throw new DominioException("La contraseña no puede estar vacía.");
+
         _id = Guid.NewGuid();
         _nombre = nombre.Trim();
-        _correoElectronico = correoElectronico ?? throw new DominioException("El correo electrónico no puede ser nulo.");
-        _contrasenaHash = contrasenaHash  ?? throw new DominioException("El correo electrónico no puede ser nulo.");;
+        _contrasenaHash = contrasenaHash;
         _esAdministrador = esAdministrador;
     }
     public static Usuario UsuarioFactoryMethod(Guid id, string nombre, CorreoElectronico correo, string contraseniaHash,bool esAdministrador)
     {
+        if (id == Guid.Empty)
+            throw new DominioException("El Id del usuario no puede estar vacío.");
+        if (string.IsNullOrWhiteSpace(nombre))
+            throw new DominioException("El nombre del usuario no puede estar vacío.");
+        if (correo is null)
+            throw new DominioException("El correo electrónico no puede ser nulo.");
+        if (string.IsNullOrWhiteSpace(contraseniaHash))
+            throw new DominioException("La contraseña no puede estar vacía.");
+
         var usuario = new Usuario();
         
         usuario._id = id;
-        usuario._nombre = nombre;
+        usuario._nombre = nombre.Trim();
         usuario._correoElectronico = correo;
         usuario._contrasenaHash = contraseniaHash;
         usuario._esAdministrador = esAdministrador;
@@ -82,11 +94,10 @@ public class Usuario
     {
         if (string.IsNullOrWhiteSpace(nuevoNombre))
             throw new DominioException("El nombre no puede estar vacío.");
-        if (string.IsNullOrWhiteSpace(nuevoCorreo) || !nuevoCorreo.Contains("@"))
-            throw new DominioException("El formato del correo electrónico no es válido.");
 
+        var correoElectronico = new CorreoElectronico(nuevoCorreo);
         _nombre = nuevoNombre;
-        _correoElectronico = new CorreoElectronico(nuevoCorreo);
+        _correoElectronico = correoElectronico;
     }
 
     public void Cambiarcontrasenia(string nuevacontraseniaHash)
