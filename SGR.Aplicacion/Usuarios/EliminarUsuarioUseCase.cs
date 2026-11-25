@@ -21,6 +21,9 @@ public class EliminarUsuarioUseCase
         if (operador == null || !operador._esAdministrador)
             throw new AutorizacionException("Acción denegada: Se requieren privilegios de administrador.");
 
+        if (request.OperadorId == request.UsuarioAEliminar)
+            throw new AutorizacionException("Un administrador no puede eliminar su propia cuenta.");
+
         var usuario = _repositorio.ObtenerPorId(request.UsuarioAEliminar);
         if (usuario == null)
             throw new DominioException("El usuario a eliminar no existe.");
