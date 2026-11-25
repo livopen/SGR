@@ -4,11 +4,17 @@ using SGR.Dominio.Actuaciones;
 using SGR.Dominio.Reclamos;
 using SGR.Dominio.Usuarios;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace SGR.Infraestructura;
 
 public class SgrContext : DbContext
 {
+    private static readonly JsonSerializerOptions PermisoJsonOptions = new()
+    {
+        Converters = { new JsonStringEnumConverter() }
+    };
+
     public DbSet<Reclamo> Reclamos {get; set;}
     public DbSet<Actuacion> Actuaciones {get; set;}
     public DbSet<Usuario> Usuarios {get; set;}
@@ -32,7 +38,7 @@ public class SgrContext : DbContext
         {
             entity.HasKey(e => e.Id);
             
-            entity.Property(e => e.Estado);
+            entity.Property(e => e.Estado).HasConversion<string>();
 
             entity.ComplexProperty(e => e.Asunto); 
         });
@@ -42,8 +48,12 @@ public class SgrContext : DbContext
             
             entity.HasKey(t => t.Id);
         
-            entity.Property(t => t.Tipo);
+            entity.Property(t => t.Tipo).HasConversion<string>();
             entity.ComplexProperty(t => t.Detalle);
+            entity.HasOne<Reclamo>()
+                .WithMany()
+                .HasForeignKey(t => t.ReclamoId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
 
         // Mapeo de Usuario
@@ -51,11 +61,12 @@ public class SgrContext : DbContext
         
             entity.Property(u => u._nombre).IsRequired();
 
-            entity.Property(u => u._correoElectronico).HasConversion(correoObjeto => correoObjeto.Valor, 
-                correoString => new CorreoElectronico(correoString)
-            ).HasColumnName("_correoElectronico");
-
-            entity.HasIndex(u => u._correoElectronico).IsUnique();
+            entity.ComplexProperty(u => u._correoElectronico, correo =>
+            {
+                correo.Property(c => c.Valor)
+                    .HasColumnName("_correoElectronico")
+                    .IsRequired();
+            });
 
             entity.Property(u => u._contrasenaHash).IsRequired();
         
@@ -63,8 +74,8 @@ public class SgrContext : DbContext
         entity.Property<HashSet<Permiso>>("_permisos")
                 .HasColumnName("Permisos")
                 .HasConversion(
-                    lista => JsonSerializer.Serialize(lista, (JsonSerializerOptions?)null),
-                    json => JsonSerializer.Deserialize<HashSet<Permiso>>(json, (JsonSerializerOptions?)null) ?? new HashSet<Permiso>()
+                    lista => JsonSerializer.Serialize(lista, PermisoJsonOptions),
+                    json => JsonSerializer.Deserialize<HashSet<Permiso>>(json, PermisoJsonOptions) ?? new HashSet<Permiso>()
                 )
                 .Metadata.SetValueComparer(new ValueComparer<HashSet<Permiso>>(
                     (actual, snapshot) => actual != null && snapshot != null && actual.SetEquals(snapshot),

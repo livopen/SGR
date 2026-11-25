@@ -28,7 +28,7 @@ public class EliminarActuacionUseCase
         if (!_autorizacion.PoseeElPermiso(idUsuario,Permiso.ActuacionBaja))
             throw new AutorizacionException("El usuario no tiene permisos para eliminar actuaciones.");
 
-        var actuacion = _actuacionRepo.ObtenerTodos().FirstOrDefault(t => t.Id == idActuacion)
+        var actuacion = _actuacionRepo.ObtenerPorId(idActuacion)
         ?? throw new EntidadNoEncontradaException($"La actuacion con ID {idActuacion} no existe.");
 
         Guid reclamoIdAsociado = actuacion.ReclamoId;

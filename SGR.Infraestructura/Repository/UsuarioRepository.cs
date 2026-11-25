@@ -16,11 +16,8 @@ public class UsuarioRepository : IUsuarioRepository
 
     public Usuario? ObtenerPorCorreo(CorreoElectronico correo)
     {
-        var correoNormalizado = correo;
-
         return _context.Usuarios
-            .AsEnumerable()
-            .FirstOrDefault(u => u._correoElectronico == correoNormalizado);
+            .FirstOrDefault(u => u._correoElectronico.Valor == correo.Valor);
     }
     public Usuario? ObtenerPorId(Guid id)
     {

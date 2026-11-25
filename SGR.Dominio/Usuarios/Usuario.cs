@@ -8,7 +8,7 @@ public class Usuario
 {
     public string? _nombre {get; private set;}
     public Guid _id {get; private set;}
-    public CorreoElectronico? _correoElectronico {get; private set;}
+    public CorreoElectronico _correoElectronico {get; private set;} = null!;
     public string? _contrasenaHash {get; private set;}
     public bool _esAdministrador {get; private set;}
     private HashSet<Permiso> _permisos=new();

@@ -29,6 +29,12 @@ public class ActuacionRepository : IActuacionRepository
             _context.Actuaciones.Remove(actuacion);
         }
     }
+
+    public Actuacion? ObtenerPorId(Guid id)
+    {
+        return _context.Actuaciones.Find(id);
+    }
+
     public IEnumerable<Actuacion> ObtenerActuacionesIdReclamo(Guid ReclamoIdABuscar)
     {
         return _context.Actuaciones.Where(a => a.ReclamoId == ReclamoIdABuscar).ToList();

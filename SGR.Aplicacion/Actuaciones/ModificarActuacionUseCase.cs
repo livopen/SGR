@@ -1,6 +1,5 @@
 namespace SGR.Aplicacion.Actuaciones;
 using System;
-using System.Linq;
 using SGR.Aplicacion.Autorizacion;
 using SGR.Aplicacion.Comun;
 using SGR.Aplicacion.Reclamos;
@@ -31,7 +30,7 @@ public class ModificarActuacionUseCase{
         if (!_autorizacion.PoseeElPermiso(idUsuario, Permiso.ActuacionModificacion))
             throw new AutorizacionException("El usuario no tiene permisos.");
 
-        var actuacion = _actuacionRepo.ObtenerTodos().FirstOrDefault(t => t.Id == idActuacion)
+        var actuacion = _actuacionRepo.ObtenerPorId(idActuacion)
             ?? throw new EntidadNoEncontradaException($"La actuacion con ID {idActuacion} no existe.");
 
 
