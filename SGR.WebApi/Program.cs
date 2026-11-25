@@ -67,17 +67,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddAuthorization();
 
-// 1. Agregar política de CORS
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowBlazor", policy =>
-    {
-        policy.AllowAnyOrigin()   
-              .AllowAnyMethod()
-              .AllowAnyHeader()
-              .WithExposedHeaders("Authorization", "token", "Authorization-Token");
-    });
-});
 var app = builder.Build();
 
 // BLOQUE DE INICIALIZACIÓN: Creación de BD y Seed Data
@@ -148,7 +137,6 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-app.UseCors("AllowBlazor");
 app.UseAuthentication();
 app.UseAuthorization();
 
