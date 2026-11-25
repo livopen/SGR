@@ -12,7 +12,7 @@ public class ObtenerActuacionPorIdUseCase
         Guid idActuacion = Guid.Parse(request.idActuacion);
         Guid idUsuario = Guid.Parse(request.idUsuario);
 
-        var actuacion = _actuacionRepo.ObtenerTodos().FirstOrDefault(t => t.Id == idActuacion)
+        var actuacion = _actuacionRepo.ObtenerPorId(idActuacion)
             ?? throw new EntidadNoEncontradaException($"La actuacion con ID {idActuacion} no existe.");
 
         return new ObtenerActuacionPorIdResponse(

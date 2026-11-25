@@ -54,6 +54,9 @@ public sealed class ActuacionTxtRepository : IActuacionRepository
     public IEnumerable<Actuacion> ObtenerActuacionesIdReclamo(Guid id)
         => ObtenerTodos().Where(a => a.ReclamoId == id).ToList();
 
+    public Actuacion? ObtenerPorId(Guid id)
+        => ObtenerTodos().FirstOrDefault(a => a.Id == id);
+
     public IEnumerable<Actuacion> ObtenerTodos()
     {
         if (!File.Exists(_ruta))
